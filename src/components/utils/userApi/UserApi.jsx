@@ -6,9 +6,9 @@ const userApi = axios.create({
 });
 
 export const loginApi = (post) => {
-  return userApi.post("users/login", post);
+  return userApi.post("auth/login", post);
 };
 
 export const signupApi = (post) => {
-  return userApi.post("users/signup", post);
+  return userApi.post("auth/signup", post);
 };

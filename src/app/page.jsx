@@ -1,15 +1,13 @@
 
-
-import SeekerSignup from '@/components/auth/seeker/SeekerSignup'
+import Home from '@/components/jobSeeker/pages/home/Home'
 import React from 'react'
 
-const Home = () => {
+const MainHome = () => {
   return (
-    <div>
-   <SeekerSignup/>
-  
-    </div>
+    <>
+      <Home/>
+    </>
   )
 }
 
-export default Home
+export default MainHome
