@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const userApi = axios.create({
-  baseURL: "https://next-jobquick.onrender.com/api/v1",
-  withCredentials: true, // Ensures cookies/tokens are included in requests
+  baseURL: "https://next-jobquick.onrender.com/api/v1"
 });
 
 export const loginApi = (post) => {

@@ -11,6 +11,7 @@ const SeekerSignup = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
+    role: "seeker",
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -24,6 +25,7 @@ const SeekerSignup = () => {
     e.preventDefault();
     console.log("Email:", data.email);
     console.log("Password:", data.password);
+    console.log("Role:", data.role);
 
     try {
       const response = await signupApi(data);
@@ -33,7 +35,6 @@ const SeekerSignup = () => {
         setSuccess("Account created successfully!");
         setError(null);
         router.push("/user-login");
-        // You can add your Next.js navigation here if needed
       } else {
         throw new Error("Signup failed");
       }
@@ -53,20 +54,12 @@ const SeekerSignup = () => {
       }}
     >
       <div className="flex flex-col lg:flex-row justify-center items-center min-h-screen w-full p-4 md:p-8 lg:p-12 backdrop-blur-sm">
-        {/* Signup Form Container */}
         <div className="w-full max-w-md bg-white p-6 md:p-8 lg:p-12 rounded-lg shadow-lg">
-          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">
-            Sign Up
-          </h2>
+          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">Sign Up</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-gray-700 text-sm font-medium mb-1"
-              >
-                Email
-              </label>
+              <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">Email</label>
               <input
                 type="email"
                 id="email"
@@ -79,12 +72,7 @@ const SeekerSignup = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-gray-700 text-sm font-medium mb-1"
-              >
-                Password
-              </label>
+              <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-1">Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -96,6 +84,20 @@ const SeekerSignup = () => {
               />
             </div>
 
+            <div>
+              <label htmlFor="role" className="block text-gray-700 text-sm font-medium mb-1">Role</label>
+              <select
+                id="role"
+                name="role"
+                value={data.role}
+                onChange={handleChange}
+                className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="seeker">Seeker</option>
+                <option value="hoster">Hoster</option>
+              </select>
+            </div>
+
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -104,9 +106,7 @@ const SeekerSignup = () => {
                 onChange={(e) => setShowPassword(e.target.checked)}
                 className="mr-2"
               />
-              <label htmlFor="showPassword" className="text-sm text-gray-700">
-                Show Password
-              </label>
+              <label htmlFor="showPassword" className="text-sm text-gray-700">Show Password</label>
             </div>
 
             <button
@@ -123,63 +123,12 @@ const SeekerSignup = () => {
           <div className="mt-6 text-center text-gray-500">OR</div>
 
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
-            <button className="w-full bg-teal-950 text-white py-2 rounded hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-300">
-              FACEBOOK
-            </button>
-            <button className="w-full bg-teal-500 text-white py-2 rounded hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-300">
-              TWITTER
-            </button>
+            <button className="w-full bg-teal-950 text-white py-2 rounded hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-300">FACEBOOK</button>
+            <button className="w-full bg-teal-500 text-white py-2 rounded hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-300">TWITTER</button>
           </div>
 
           <div className="mt-6 text-center">
-            Already have an account?{" "}
-            <Link href="/login" className="text-teal-500">
-              Sign In
-            </Link>
-          </div>
-        </div>
-
-        {/* Right Side Content */}
-        <div className="hidden lg:block lg:w-1/2 lg:max-w-xl xl:max-w-2xl lg:ml-16 text-white">
-          <div className="p-8 rounded-lg">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-black">
-              Join our community today
-            </h2>
-            <p className="mb-6 text-teal-500">
-              Get access to premium features and connect with professionals.
-            </p>
-
-            <div className="space-y-6">
-              <div className="flex items-center text-black">
-                <div className="bg-teal-50 rounded-full flex items-center justify-center w-12 h-12 mr-4 shrink-0">
-                  <BriefcaseBusiness className="text-teal-500" />
-                </div>
-                <p>
-                  Create a professional profile to showcase your skills and
-                  experience
-                </p>
-              </div>
-
-              <div className="flex items-center text-black">
-                <div className="bg-teal-50 rounded-full flex items-center justify-center w-12 h-12 mr-4 shrink-0">
-                  <CalendarDays className="text-teal-500" />
-                </div>
-                <p>
-                  Schedule interviews and manage your job applications in one
-                  place
-                </p>
-              </div>
-
-              <div className="flex items-center text-black">
-                <div className="bg-teal-50 rounded-full flex items-center justify-center w-12 h-12 mr-4 shrink-0">
-                  <Trophy className="text-teal-500" />
-                </div>
-                <p>
-                  Get matched with top employers looking for professionals like
-                  you
-                </p>
-              </div>
-            </div>
+            Already have an account? <Link href="/user-login" className="text-teal-500">Sign In</Link>
           </div>
         </div>
       </div>

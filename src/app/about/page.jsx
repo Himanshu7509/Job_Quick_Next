@@ -1,8 +1,11 @@
+import About from '@/components/jobSeeker/pages/about/About'
 import React from 'react'
 
 const AboutPage = () => {
   return (
-    <div>AboutPage</div>
+    <>
+    <About/>
+    </>
   )
 }
 

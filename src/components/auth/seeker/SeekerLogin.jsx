@@ -8,8 +8,11 @@ import {
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie"; // Make sure to install this: npm install js-cookie
 
 const SeekerLogin = () => {
+  const router = useRouter();
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -31,11 +34,27 @@ const SeekerLogin = () => {
       const response = await loginApi(data);
       console.log("Login Response:", response);
 
-      if (response) {
+      if (response && response.data) {
+        // Store token in cookies (expires in 1 day)
+        Cookies.set("authToken", response.data.token, { expires: 1 });
+        
+        // Store user role and id in cookies
+        Cookies.set("userRole", response.data.role, { expires: 1 });
+        Cookies.set("userId", response.data._id, { expires: 1 });
+        
         setSuccess("Login successful!");
+        
+        // Navigate based on user role
+        if (response.data.role === "seeker") {
+          router.push("/");
+        } else if (response.data.role === "hoster") {
+          router.push("/dashboard");
+        } else {
+          // Default fallback
+          router.push("/");
+        }
+        
         setError(null);
-        // You can add your Next.js navigation here if needed
-        // For example: router.push('/dashboard');
       } else {
         throw new Error("Login failed");
       }

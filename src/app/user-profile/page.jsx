@@ -1,9 +1,12 @@
+
 import React from 'react'
 
-const ProfilePage = () => {
+const ProfileSeeker = () => {
   return (
-    <div>ProfilePage</div>
+    <div>
+     
+    </div>
   )
 }
 
-export default ProfilePage
+export default ProfileSeeker
