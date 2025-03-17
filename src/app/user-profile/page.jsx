@@ -1,12 +1,10 @@
-
+import Profile from '@/components/jobSeeker/pages/profile_and_detail/SeekerProfile'
 import React from 'react'
 
-const ProfileSeeker = () => {
+const ProfilePage = () => {
   return (
-    <div>
-     
-    </div>
+    <div><Profile/></div>
   )
 }
 
-export default ProfileSeeker
+export default ProfilePage
