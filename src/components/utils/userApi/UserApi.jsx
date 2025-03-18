@@ -39,3 +39,16 @@ export const patchProfileApi = (id, post) => {
 export const getProfileApi = (userId) => {
   return userApi.get(`/seeker/get/${userId}`);
 };
+
+export const JobsAPi = (filters) => {
+  const params = new URLSearchParams(filters).toString();
+  return userApi.get(`/job/filter?${params}`);
+};
+
+export const getCategoriesApi = () => {
+  return userApi.get("/categories/get"); 
+};
+
+export  const jobdetailsApi = (jobId) => {
+  return userApi.get(`/job/${jobId}`);
+}
