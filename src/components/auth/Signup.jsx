@@ -6,7 +6,7 @@ import { BriefcaseBusiness, CalendarDays, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const SeekerSignup = () => {
+const Signup = () => {
   const router = useRouter();
   const [data, setData] = useState({
     email: "",
@@ -136,4 +136,4 @@ const SeekerSignup = () => {
   );
 };
 
-export default SeekerSignup;
+export default Signup;

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie"; // Make sure to install this: npm install js-cookie
 
-const SeekerLogin = () => {
+const Login = () => {
   const router = useRouter();
   const [data, setData] = useState({
     email: "",
@@ -195,4 +195,4 @@ const SeekerLogin = () => {
   );
 };
 
-export default SeekerLogin;
+export default Login;

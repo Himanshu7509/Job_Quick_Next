@@ -1,8 +1,11 @@
 import React from 'react'
+import Header from '../../common/header/Header'
+import Footer from '../../common/footer/Footer'
 
 const Contact = () => {
   return (
     <>
+    <Header/>
       <div className="w-auto h-60 bg-gray-900 text-white flex justify-center items-center">
         <h1 className="text-3xl md:text-5xl font-semibold">Contact Us</h1>
       </div>
@@ -220,6 +223,7 @@ const Contact = () => {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
+      <Footer/>
     </>
   )
 }

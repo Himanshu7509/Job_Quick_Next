@@ -1,16 +1,22 @@
 "use client"
 import React from "react";
+import About1 from '@/components/assets/about2.avif'
+import About2 from '@/components/assets/about3.avif'
+import About3 from '@/components/assets/about4.avif'
+import About4 from '@/components/assets/about6.avif'
 
 const AboutBestSec = () => {
   return (
     <section className="py-12 px-6 sm:px-[5%] lg:px-[10%] bg-gradient-to-r from-gray-100 to-gray-50 flex flex-col lg:flex-row items-center">
       {/* Left Section - Image Grid */}
       <div className="grid grid-cols-2 gap-4 w-full lg:w-1/2">
-        {["about2.avif", "about3.avif", "about4.avif", "about6.avif"].map(
+        {[About1, About2, About3, About4].map(
           (img, index) => (
+            
             <div key={index} className="rounded-xl overflow-hidden shadow-lg">
+              
               <img
-                src={`src/assets/${img}`}
+                src={img}
                 className="w-full h-32 sm:h-40 md:h-48 object-cover"
                 alt="Company culture"
               />

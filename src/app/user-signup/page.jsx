@@ -1,10 +1,11 @@
-import SeekerSignup from '@/components/auth/seeker/SeekerSignup'
+
 import React from 'react'
+import Signup from '@/components/auth/Signup'
 
 const SignupPage = () => {
   return (
     <>
-    <SeekerSignup/>
+      <Signup/>
     </>
   )
 }

@@ -1,10 +1,10 @@
-import SeekerLogin from '@/components/auth/seeker/SeekerLogin'
+import Login from '@/components/auth/Login'
 import React from 'react'
 
 const LoginPage = () => {
   return (
     <>
-      <SeekerLogin/>
+      <Login/>
     </>
   )
 }
