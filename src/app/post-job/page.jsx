@@ -1,8 +1,9 @@
+import PostJob from '@/components/jobHoster/pages/postjob/PostJob'
 import React from 'react'
 
 const PostJobPage = () => {
   return (
-    <div>PostJobPage</div>
+    <><PostJob/></>
   )
 }
 
