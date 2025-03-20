@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { postHosterProfileApi, patchHosterProfileApi, getHosterProfileApi } from "@/components/utils/userApi/UserApi";
+import { postHosterProfileApi, patchHosterProfileApi, getHosterProfileApi } from "@/components/utils/hosterApi/HosterApi";
 
 const HosterProfile = () => {
   const [formData, setFormData] = useState({

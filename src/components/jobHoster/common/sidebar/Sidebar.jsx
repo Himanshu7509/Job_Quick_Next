@@ -1,10 +1,10 @@
-
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Cookies from "js-cookie";
+import { getHosterProfileApi } from "@/components/utils/hosterApi/HosterApi";
 import {
   LogOut,
   User,
@@ -21,39 +21,45 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState("");
+  const [data, setData] = useState("");
+
+  const userId = Cookies.get("userId");
 
   const clearCookie = (name) => {
     Cookies.remove(name, { path: "/" });
   };
 
   const handleLogout = () => {
-    clearCookie("token");
-    clearCookie("user");
+    clearCookie("authToken");
+    clearCookie("userId");
     router.push("/");
   };
 
+  const getName = async () => {
+    const response = await getHosterProfileApi(userId);
+    setData(response.data);
+    console.log(response);
+  };
   useEffect(() => {
-    const userId = Cookies.get("user");
-    const token = Cookies.get("token");
-
-    if (userId && token) {
-      fetch(`/api/hostuser/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setUserName(data.fullName || "Complete Profile");
-        })
-        .catch(() => setUserName("Complete Profile"));
-    }
+    getName();
   }, []);
 
   const navItems = [
-    { icon: <User className="w-5 h-5" />, label: "My Profile", path: "/hosting-detail-form" },
-    { icon: <Briefcase className="w-5 h-5" />, label: "My Jobs", path: "/jobs-hoster" },
-    { icon: <CalendarPlus className="w-5 h-5" />, label: "Post Job", path: "/post-job" },
+    {
+      icon: <User className="w-5 h-5" />,
+      label: "My Profile",
+      path: "/host-profile",
+    },
+    {
+      icon: <Briefcase className="w-5 h-5" />,
+      label: "My Jobs",
+      path: "/my-jobs",
+    },
+    {
+      icon: <CalendarPlus className="w-5 h-5" />,
+      label: "Post Job",
+      path: "/post-job",
+    },
   ];
 
   const isActiveRoute = (path) => pathname === path;
@@ -88,15 +94,19 @@ const Sidebar = () => {
             </div>
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-teal-900 rounded-full"></div>
           </div>
-          <h2 className="text-xl text-white ml-2 font-semibold mb-2">{userName}</h2>
+          <h2 className="text-xl text-white ml-2 font-semibold mb-2">
+            {data.fullName || "Admin"}
+          </h2>
         </Link>
 
         {/* Navigation Links */}
         <nav className="flex-1 overflow-y-auto">
           <div className="space-y-1">
-            <Link href="/hostingDashboard" className="block">
+            <Link href="/dashboard" className="block">
               <div
-                className={`flex items-center space-x-3 p-3 ${isActiveRoute("/hostingDashboard") ? "bg-teal-700" : ""} text-white hover:bg-teal-100 hover:text-black rounded-lg`}
+                className={`flex items-center space-x-3 p-3 ${
+                  isActiveRoute("/dashboard") ? "bg-teal-700" : ""
+                } text-white hover:bg-teal-100 hover:text-black rounded-lg`}
               >
                 <Users className="w-5 h-5" />
                 <span className="text-base">Dashboard</span>
@@ -106,7 +116,9 @@ const Sidebar = () => {
             {navItems.map((item, index) => (
               <Link href={item.path} key={index} className="block">
                 <div
-                  className={`flex items-center space-x-3 p-3 ${isActiveRoute(item.path) ? "bg-teal-700" : ""} text-white hover:bg-teal-100 hover:text-black rounded-lg transition-colors duration-200`}
+                  className={`flex items-center space-x-3 p-3 ${
+                    isActiveRoute(item.path) ? "bg-teal-700" : ""
+                  } text-white hover:bg-teal-100 hover:text-black rounded-lg transition-colors duration-200`}
                 >
                   {item.icon}
                   <span className="text-base">{item.label}</span>
@@ -129,7 +141,12 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Sidebar Overlay */}
-      {isOpen && <div className="fixed inset-0 bg-black opacity-50 lg:hidden" onClick={() => setIsOpen(false)}></div>}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
     </>
   );
 };

@@ -431,7 +431,7 @@ const PostJob = () => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
           >
             <option value="">Select experience level</option>
-            <option value="Entry-Level">Entry-Level</option>
+            <option value="Fresher">Fresher</option>
             <option value="1-2 years">1-2 years</option>
             <option value="2-5 years">2-5 years</option>
             <option value="5+ years">5+ years</option>
