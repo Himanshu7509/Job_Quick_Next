@@ -17,21 +17,31 @@ const Jobs = () => {
     experience: "",
     jobType: "",
     workType: "",
+    category: "",
+    subcategory: "",
   });
 
+  // Add a new state for pending filters
+  const [pendingFilters, setPendingFilters] = useState({
+    search: "",
+    experience: "",
+    jobType: "",
+    workType: "",
+    category: "",
+    subcategory: "",
+  });
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // State for filter toggle
 
-  // Function to fetch jobs based on filters
   const fetchJobs = useCallback(async () => {
-   
     setError(null);
     try {
-      const response = await JobsAPi(filters);
+      const response = await JobsAPi(filters); // Use the actual filters (not pendingFilters)
       setJobs(response.data.jobs);
       console.log("Fetched jobs:", response.data);
     } catch (err) {
       console.error("Error fetching jobs:", err);
       setError("Failed to load jobs.");
-    } 
+    }
   }, [filters]);
 
   // Function to fetch categories
@@ -41,7 +51,7 @@ const Jobs = () => {
       setCategories(response.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
-      setError("Failed to load categories."); // Or a separate error state for categories
+      setError("Failed to load categories.");
     }
   }, []);
 
@@ -52,7 +62,8 @@ const Jobs = () => {
 
   // Handler for filter changes
   const handleFilterChange = (filterName, value) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+    setPendingFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+    console.log("Filter Changed:", filterName, value);
   };
 
   // Handler for category change
@@ -60,20 +71,38 @@ const Jobs = () => {
     const category = categories.find((cat) => cat._id === categoryId);
     setSelectedCategory(category || null);
     setSelectedSubcategory(""); // Reset subcategory when category changes
+
+    // Update pendingFilters instead of filters
+    setPendingFilters((prevFilters) => ({
+      ...prevFilters,
+      category: category ? category.title : "",
+      subcategory: "", // Clear subcategory filter when category changes
+    }));
+
+    console.log(
+      "Category Changed:",
+      categoryId,
+      category ? category.title : ""
+    );
   };
 
   // Handler for subcategory change
   const handleSubcategoryChange = (subcategory) => {
     setSelectedSubcategory(subcategory);
-    setFilters((prevFilters) => ({ ...prevFilters, subcategory: subcategory })); // Update filters when subcategory changes
+    setPendingFilters((prevFilters) => ({ ...prevFilters, subcategory: subcategory }));
+    console.log("Subcategory Changed:", subcategory);
   };
 
   // Handler for applying filters
   const handleApplyFilters = () => {
-    console.log("Applying filters:", filters);
+    setFilters(pendingFilters); // Update actual filters with pending filters
+    console.log("Applying filters:", pendingFilters);
     fetchJobs(); // Re-fetch jobs with the current filters
   };
 
+  const toggleFilterVisibility = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -81,32 +110,48 @@ const Jobs = () => {
 
   return (
     <>
-    <Header/>
-    <div className="flex flex-col md:flex-row">
-      {/* Job Filters */}
-      <div className="w-full md:w-80 p-4">
-        <JobFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onApplyFilters={handleApplyFilters}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          selectedSubcategory={selectedSubcategory}
-          handleCategoryChange={handleCategoryChange}
-          handleSubcategoryChange={handleSubcategoryChange}
-        />
-      </div>
+      <Header />
+      <div className="flex flex-col md:flex-row">
+        {/* Filter Toggle Button (Mobile/Tablet) */}
+        <button
+          className="md:hidden bg-teal-600 text-white p-2 rounded-md mb-4"
+          onClick={toggleFilterVisibility}
+        >
+          {isFilterOpen ? "Close Filters" : "Open Filters"}
+        </button>
 
-      {/* Job Listings */}
-      <div className="flex-1 p-4">
-        {jobs.length > 0 ? (
-          jobs.map((job) => <JobCard key={job._id} jobs={job} />)
-        ) : (
-          <div>No jobs found matching your criteria.</div>
-        )}
+        {/* Job Filters */}
+        <div
+          className={`w-full md:w-80 p-4 ${
+            isFilterOpen ? "" : "hidden md:block"
+          }`}
+        >
+          <JobFilters
+            filters={pendingFilters}  // Use pendingFilters instead of filters
+            onFilterChange={handleFilterChange}
+            onApplyFilters={handleApplyFilters}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            handleCategoryChange={handleCategoryChange}
+            handleSubcategoryChange={handleSubcategoryChange}
+          />
+        </div>
+
+        {/* Job Listings */}
+        <div className="flex-1 p-4">
+          {jobs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {jobs.map((job) => (
+                <JobCard key={job._id} jobs={job} />
+              ))}
+            </div>
+          ) : (
+            <div>No jobs found matching your criteria.</div>
+          )}
+        </div>
       </div>
-    </div>
-    <Footer/>
+      <Footer />
     </>
   );
 };

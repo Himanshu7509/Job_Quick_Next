@@ -1,8 +1,12 @@
+import Dashboard from '@/components/jobHoster/pages/dashboard/Dashboard'
 import React from 'react'
 
 const DashboardPage = () => {
   return (
-    <div>DashboardPage</div>
+    <div>
+
+      <Dashboard/>
+    </div>
   )
 }
 
