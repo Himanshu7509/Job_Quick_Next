@@ -4,13 +4,21 @@ import Footer from '@/components/jobSeeker/common/footer/Footer'
 import Header from '@/components/jobSeeker/common/header/Header'
 import { getCategoriesApi } from '@/components/utils/userApi/UserApi'
 import React, { useState, useEffect } from 'react'
+import { postMockApi } from '@/components/utils/userApi/UserApi'
+import { useRouter } from 'next/navigation'
 
 const AiMockTest = () => {
   const [data, setData] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [selectedSubCategory, setSelectedSubCategory] = useState(null)
   const [loading, setLoading] = useState(true)
-
+  const [questions, setQuestions] = useState({
+    category: '',
+    subcategory: ''
+  })
+  const [mcq, setmcq] = useState(null);
+  
+  const router = useRouter();
   const getData = async() => {
     try {
       setLoading(true)
@@ -32,31 +40,100 @@ const AiMockTest = () => {
     console.log("Selected category:", category)
     setSelectedCategory(category)
     setSelectedSubCategory(null)
+    // Update questions state with category
+    setQuestions(prev => ({
+      ...prev,
+      category: category.title
+    }))
   }
 
   const handleSubCategorySelect = (subCategory) => {
     console.log("Selected subcategory:", subCategory)
     setSelectedSubCategory(subCategory)
+    // Update questions state with subcategory
+    setQuestions(prev => ({
+      ...prev,
+      subcategory: subCategory
+    }))
   }
-
-  const startTest = () => {
-    console.log("startTest called")
-    console.log("Selected category:", selectedCategory)
-    console.log("Selected subcategory:", selectedSubCategory)
-    
+  const startTest = async () => {
+    console.log("startTest called");
+  
     if (!selectedCategory || !selectedSubCategory) {
-      console.log("Missing selection")
-      alert("Please select both a category and subcategory")
-      return
+      alert("Please select both a category and subcategory");
+      return;
     }
-    
-    console.log("Starting test with:", {
+  
+    const testdata = {
       category: selectedCategory.title,
-      subCategory: selectedSubCategory
-    })
-    
-    // Add your logic to start the test
-    alert(`Starting test for ${selectedCategory.title} - ${selectedSubCategory}`)
+      subcategory: selectedSubCategory
+    };
+  
+    console.log("Starting test with:", testdata);
+  
+    try {
+      setLoading(true);
+      const res = await postMockApi(testdata);
+      console.log("Mock test response:", res.data);
+      
+      let questionsData;
+      
+      // Check if the response contains questions
+      if (res.data && res.data.questions) {
+        questionsData = res.data.questions;
+      } else if (res.data && Array.isArray(res.data)) {
+        questionsData = res.data;
+      } else {
+        throw new Error("Invalid response format");
+      }
+      
+      // Sample data for testing if the API doesn't return actual questions
+      if (!questionsData || !Array.isArray(questionsData) || questionsData.length === 0) {
+        console.warn("No questions returned from API, using sample data for testing");
+        questionsData = [
+          {
+            question: "What is the capital of France?",
+            options: ["London", "Berlin", "Paris", "Madrid"],
+            answer: "Paris"
+          },
+          {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Earth", "Mars", "Jupiter", "Venus"],
+            answer: "Mars"
+          },
+          {
+            question: "What is 2 + 2?",
+            options: ["3", "4", "5", "6"],
+            answer: "4"
+          }
+        ];
+      }
+      
+      // Convert the questions array to a JSON string and encode it properly for URL
+      const questionsStr = encodeURIComponent(JSON.stringify(questionsData));
+      console.log("Navigating to:", `/questions/${questionsStr}`);
+      
+      // Navigate to the test page
+      router.push(`/questions/${questionsStr}`);
+      
+    } catch (error) {
+      console.error("Error starting mock test:", error);
+      alert("Failed to start test. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockTest = async (testdata) => {
+    try {
+      const res = await postMockApi(testdata);
+      console.log("Mock test response:", res.data.questions);
+      setmcq(res.data.questions)
+      return res;
+    } catch (error) {
+      console.error("Error in mockTest:", error);
+      throw error;
+    }
   }
 
   return (
@@ -183,13 +260,7 @@ const AiMockTest = () => {
                     ? 'bg-teal-600 hover:bg-teal-700' 
                     : 'bg-gray-400'
                 }`}
-                onClick={() => {
-                  if (selectedCategory && selectedSubCategory) {
-                    startTest();
-                  } else {
-                    alert("Please select both a category and subcategory");
-                  }
-                }}
+                onClick={startTest}
               >
                 Start Test
               </button>

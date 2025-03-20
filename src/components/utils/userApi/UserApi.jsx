@@ -73,3 +73,15 @@ export const getCategoriesApi = () => {
 export const jobdetailsApi = (jobId) => {
   return userApi.get(`/job/${jobId}`);
 };
+
+export const postMockApi = (post) =>{
+  return userApi.post("/mocktest/generate", post);
+}
+
+export const jobApplyApi = (post) => {
+  return userApi.post('/applicant/post', post);
+}
+
+ export const checkApplyApi = (jobId, applicantId) => {
+  return userApi.get(`applicant/check?jobId=${jobId}&applicantId=${applicantId}`)
+ }
