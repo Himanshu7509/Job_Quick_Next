@@ -26,7 +26,7 @@ const Jobs = () => {
     setError(null);
     try {
       const response = await JobsAPi(filters);
-      setJobs(response.data);
+      setJobs(response.data.jobs);
       console.log("Fetched jobs:", response.data);
     } catch (err) {
       console.error("Error fetching jobs:", err);
@@ -88,7 +88,6 @@ const Jobs = () => {
         <JobFilters
           filters={filters}
           onFilterChange={handleFilterChange}
-     
           onApplyFilters={handleApplyFilters}
           categories={categories}
           selectedCategory={selectedCategory}

@@ -1,28 +1,43 @@
-"use client"
+"use client";
 import React from "react";
-import About1 from '@/components/assets/about2.avif'
-import About2 from '@/components/assets/about3.avif'
-import About3 from '@/components/assets/about4.avif'
-import About4 from '@/components/assets/about6.avif'
+import About1 from "@/components/assets/about2.avif";
+import About2 from "@/components/assets/about3.avif";
+import About3 from "@/components/assets/about4.avif";
+import About4 from "@/components/assets/about6.avif";
 
 const AboutBestSec = () => {
   return (
     <section className="py-12 px-6 sm:px-[5%] lg:px-[10%] bg-gradient-to-r from-gray-100 to-gray-50 flex flex-col lg:flex-row items-center">
       {/* Left Section - Image Grid */}
       <div className="grid grid-cols-2 gap-4 w-full lg:w-1/2">
-        {[About1, About2, About3, About4].map(
-          (img, index) => (
-            
-            <div key={index} className="rounded-xl overflow-hidden shadow-lg">
-              
-              <img
-                src={img}
-                className="w-full h-32 sm:h-40 md:h-48 object-cover"
-                alt="Company culture"
-              />
-            </div>
-          )
-        )}
+        <div className="rounded-xl overflow-hidden shadow-lg">
+          <img
+            src="https://images.unsplash.com/photo-1729371568794-fb9c66ab09cf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            className="w-full h-32 sm:h-40 md:h-48 object-cover"
+            alt="Company culture"
+          />
+        </div>
+        <div className="rounded-xl overflow-hidden shadow-lg">
+          <img
+            src="https://images.unsplash.com/photo-1690378820474-b468b8ee64d3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            className="w-full h-32 sm:h-40 md:h-48 object-cover"
+            alt="Company culture"
+          />
+        </div>
+        <div className="rounded-xl overflow-hidden shadow-lg">
+          <img
+            src="https://images.unsplash.com/flagged/photo-1553028826-ccdfc006d078?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            className="w-full h-32 sm:h-40 md:h-48 object-cover"
+            alt="Company culture"
+          />
+        </div>
+        <div className="rounded-xl overflow-hidden shadow-lg">
+          <img
+            src="https://images.unsplash.com/photo-1603201667141-5a2d4c673378?q=80&w=2096&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            className="w-full h-32 sm:h-40 md:h-48 object-cover"
+            alt="Company culture"
+          />
+        </div>
       </div>
 
       {/* Right Section - Text and Features */}

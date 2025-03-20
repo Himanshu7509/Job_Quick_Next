@@ -52,3 +52,15 @@ export const getCategoriesApi = () => {
 export  const jobdetailsApi = (jobId) => {
   return userApi.get(`/job/${jobId}`);
 }
+
+export const postHosterProfileApi = (post) => {
+  return userApi.post("/hoster/post", post);
+};
+
+export const patchHosterProfileApi = (id, post) => {
+  return userApi.patch(`/hoster/update/${id}`, post);
+};
+
+export const getHosterProfileApi = (userId) => {
+  return userApi.get(`/hoster/get/${userId}`);
+};

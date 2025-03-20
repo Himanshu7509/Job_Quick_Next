@@ -1,8 +1,11 @@
+import SalaryHikeCalc from '@/components/jobSeeker/pages/salary/SalaryHikeCalc'
 import React from 'react'
 
 const SalaryCalcPage = () => {
   return (
-    <div>SalaryCalcPage</div>
+    <>
+      <SalaryHikeCalc/>
+    </>
   )
 }
 

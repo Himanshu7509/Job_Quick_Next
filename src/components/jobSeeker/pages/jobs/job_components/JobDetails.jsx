@@ -1,276 +1,224 @@
 "use client"
 import { jobdetailsApi } from '@/components/utils/userApi/UserApi'
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import {
-  BriefcaseBusiness,
-  Clock,
-  Wallet,
-  MapPin,
-  Calendar,
-  Mail,
-  Globe,
-  PhoneCall,
-  Users,
-  Building,
-} from "lucide-react";
 import Header from '@/components/jobSeeker/common/header/Header';
 import Footer from '@/components/jobSeeker/common/footer/Footer';
+import Link from 'next/link';
+import Loader from "../../../../../app/loading"
 
 const JobDetails = ({ jobId }) => {
   const[data, setdata] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const[category, setcategory] = useState([]);
+  const[subcategory, setsubcategory] = useState([]);
+  const [loading, setLoading] = useState(true); // Loader state
 
 const fetchJob = async() =>{
 
 try{
   const response = await jobdetailsApi(jobId);
   const data = response.data;
+
   console.log(data);
   setdata(data);
+  setSkills(data.skills);
+  setcategory(data.category.title);
+  setsubcategory(data.subcategories);
 } catch(err){
   console.error(err);
+}finally {
+  setLoading(false); 
 }
-
 
 }
 
 useEffect(()=> {
   fetchJob();
-},[])
-
-const KeyMetric = ({ icon: Icon, label, value }) => (
-  <div className="bg-gray-50 p-4 rounded-lg">
-    <div className="flex items-center gap-3">
-      <Icon className="w-5 h-5 text-teal-600" />
-      <div>
-        <p className="text-sm text-gray-500">{label}</p>
-        <p className="font-medium text-gray-900">{value}</p>
-      </div>
-    </div>
-  </div>
-);
-
-
-
-
+},[]);
 
   return (
    <>
    <Header/>
-      <div className="min-h-[80vh] bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl sm:max-w-3xl lg:max-w-5xl mx-auto">
-          {/* Header Section */}
-          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6 relative">
-            <div className="p-6 sm:p-8">
-              {/* Apply Button Positioned at Top Right */}
-              <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-                {/* <button
-                  onClick={handleApplyNow}
-                  disabled={hasApplied || isLoading}
-                  className={`py-2 px-4 rounded-lg font-semibold shadow-sm transition-colors duration-200 
-                  ${
-                    hasApplied
-                      ? "bg-gray-400 cursor-not-allowed text-white"
-                      : isLoading
-                      ? "bg-gray-300 cursor-wait text-white"
-                      : "bg-teal-600 text-white hover:bg-teal-700"
-                  }`}
-                >
-                  {hasApplied ? "Applied" : isLoading ? "Processing..." : "Apply Now"}
-                </button> */}
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-start gap-6">
+   {loading && <Loader />}
+   <div className='min-h-screen py-8'>
+   {!loading && (
+      <div className="min-h-screen py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="relative">
+            <div className="h-32 bg-teal-900" />
+            <div className="px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="relative -mt-16 flex flex-col items-center sm:flex-row sm:items-end sm:space-x-8">
                 <img
                   src="https://www.pngkey.com/png/full/191-1911374_company-building-png-office-building-png.png"
-                  alt={data?.companyName}
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover bg-gray-100"
+                  alt="Company Profile"
+                  className="w-32 h-32 rounded-2xl border-4 border-white shadow-xl bg-white"
                 />
-                <div className="flex-1">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                    {data?.title}
+                <div className="mt-6 md:mt-20 text-center sm:text-left flex-1">
+                  <h1 className="text-4xl font-bold text-teal-800">
+                    {data.title}
                   </h1>
-                  <p className="text-lg sm:text-xl text-teal-600 font-semibold mb-4">
-                    {data?.companyName}
+                  <p className="text-xl text-gray-700 mt-1">
+                    {data.companyName}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                    <KeyMetric
-                      icon={Wallet}
-                      label="Salary Range"
-                      value={
-                        data?.minPackage
-                          ? `${data.minPackage} - ${data.maxPackage}`
-                          : "Not disclosed"
-                      }
-                    />
-                    <KeyMetric
-                      icon={MapPin}
-                      label="Location"
-                      value={data?.location || "Remote"}
-                    />
-                    <KeyMetric
-                      icon={Clock}
-                      label="data Type"
-                      value={data?.dataType || "Not specified"}
-                    />
-                  </div>
+                </div>
+                <div className="mt-6 sm:mt-0">
+                  <button
+                    className=" bg-teal-700 text-white cursor-pointer px-8 py-3 rounded-xl font-semibold shadow-lg"
+                  >Apply Now
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* data Description */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-                  Job Description
-                </h2>
-                <p className="text-gray-600 whitespace-pre-line">
-                  {data?.jobDescription}
-                </p>
-              </div>
-
-              {/* Requirements */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-                  Requirements
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-md sm:text-lg font-medium text-gray-900 mb-2">
-                      Education
-                    </h3>
-                    <p className="text-gray-600">
-                      {data?.minEducation || "Not specified"}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-md sm:text-lg font-medium text-gray-900 mb-2">
-                      Experience
-                    </h3>
-                    <p className="text-gray-600">
-                      {data?.experience || "Not specified"}
-                    </p>
-                  </div>
-                  {data?.skills && (
-                    <div>
-                      <h3 className="text-md sm:text-lg font-medium text-gray-900 mb-2">
-                        Required Skills
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {data.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-teal-50 text-teal-600 px-3 py-1 rounded text-sm font-medium"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Sidebar with Company Info */}
-            <div className="space-y-6">
-              {/* Company Info */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="space-y-8">
+              <section>
+                <h2 className="text-3xl font-bold text-teal-700 mb-6">
                   Company Details
                 </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Building className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">
-                        Number of employees
-                      </p>
-                      <p className="font-medium text-gray-900">
-                        {data?.numOfEmployee || "Not specified"} employees
-                      </p>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Job Provider</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.fullName}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">Website</p>
-                      <a
-                        href={data?.companyURL}
-                        className="font-medium text-blue-700 hover:text-blue-700 hover:underline"
-                      >
-                        {data?.companyURL || "Not available"}
-                      </a>
-                    </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Phone Number</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.phoneNo}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium text-gray-900">
-                        {data?.companyEmail || "Not available"}
-                      </p>
-                    </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Company Size</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.numOfEmployee}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <PhoneCall className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">Phone</p>
-                      <p className="font-medium text-gray-900">
-                        {data?.phoneNo || "Not available"}
-                      </p>
-                    </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Company Email</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.companyEmail}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Company URL</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.companyURL}</p>
                   </div>
                 </div>
-              </div>
+              </section>
 
-              {/* data Details */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  Additional Details
+              <section>
+                <h2 className="text-3xl font-bold text-teal-700 mb-6">
+                  Required Skills
                 </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">
-                        Application Date
-                      </p>
-                      <p className="font-medium text-gray-900">
-                      {data?.createdAt ? new Date(data.createdAt).toLocaleDateString("en-GB") : "Not specified"}
+                <div className="flex flex-wrap gap-3">
+                {skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-3 lg:py-2 bg-teal-100 rounded-lg text-md font-medium"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+              </section>
 
-                      </p>
-                    </div>
+              <section>
+                <h2 className="text-3xl font-bold text-teal-700 mb-6">
+                  Job Details
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Job Type</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.jobType}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Users className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">
-                        Number of Openings
-                      </p>
-                      <p className="font-medium text-gray-900">
-                        {data?.noOfOpening || "Not specified"}
-                      </p>
-                    </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Work Type</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.workType}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <BriefcaseBusiness className="w-5 h-5 text-teal-600" />
-                    <div>
-                      <p className="text-sm text-gray-500">Work Type</p>
-                      <p className="font-medium text-gray-900">
-                        {data?.workType || "Not specified"}
-                      </p>
-                    </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Interview Type</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.interviewType}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Category</p>
+                    <p className="font-semibold text-gray-900 mt-1">{category}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Sub-Category</p>
+                    <p className="font-semibold text-gray-900 mt-1">
+                    {subcategory.map((subcategories, index) => (
+                  <span
+                    key={index}>
+                    {subcategories}
+                  </span>
+                ))}
+                    </p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Location</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.location}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Min Education</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.minEducation}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Experience</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.experience}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Openings</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.noOfOpening}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Min Package</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.minPackage}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Max Package</p>
+                    <p className="font-semibold text-gray-900 mt-1">{data.maxPackage}</p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-4">
+                    <p className="text-gray-600 text-sm">Posted Date</p>
+                    <p className="font-semibold text-gray-900 mt-1">{new Date(data.dateCreated).toLocaleDateString()}</p>
                   </div>
                 </div>
-              </div>
+              </section>
+
+              <section>
+                <h2 className="text-3xl font-bold text-teal-700 mb-6">
+                  Description
+                </h2>
+                <div className="space-y-6">
+                  <div className="bg-gray-100 rounded-xl p-6">
+                    <h3 className="font-bold text-gray-900 mb-3">
+                      About Company
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed">
+                    {data.companyDescription}
+                    </p>
+                  </div>
+                  <div className="bg-gray-100 rounded-xl p-6">
+                    <h3 className="font-bold text-gray-900 mb-3">
+                      Job Description
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed">
+                    {data.jobDescription}
+                    </p>
+                  </div>
+                </div>
+              </section>
             </div>
+          </div>
+          <div className="px-4 sm:px-6 lg:px-8 py-6">
+            <Link href="/jobs">
+              <button className="px-8 py-3 mb-4 bg-teal-700 cursor-pointer  text-white rounded-xl font-semibold shadow-lg hover:shadow-xl">
+                Go Back
+              </button>
+            </Link>
           </div>
         </div>
       </div>
+    </div>
+    )}
+   </div>
+ 
 
     <Footer/>
 
