@@ -40,3 +40,8 @@ export const postJob = (post) => {
 export const getCategory = () => {
   return Api.get("/categories/get");
 };
+
+
+export const getJobsApi = (hosterId) =>{
+  return Api.get(`/job/dashboard/${hosterId}`);
+}
