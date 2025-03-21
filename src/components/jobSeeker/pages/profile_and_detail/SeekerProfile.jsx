@@ -211,7 +211,7 @@ const SeekerProfile = () => {
   
   return (
     <>
-    <Header/>
+   <Header/>
     <div className="bg-gray-100 min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Enhanced Profile Header */}
@@ -417,7 +417,7 @@ const SeekerProfile = () => {
         </form>
       </div>
     </div>
-    <Footer/>
+   <Footer/>
     </>
   );
 };

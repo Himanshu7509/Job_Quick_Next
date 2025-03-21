@@ -45,3 +45,16 @@ export const getCategory = () => {
 export const getJobsApi = (hosterId) =>{
   return Api.get(`/job/dashboard/${hosterId}`);
 }
+
+const userId = Cookies.get("userId");
+export const StatData = () =>{
+  return Api.get(`job/dashboard/${userId}`);
+}
+
+export const LineCart = () => {
+  return Api.get(`applicant/graph/:jobId`)
+}
+
+export const viewappicantAPI = (jobId) => {
+  return Api.get(`/applicant/get?jobId=${jobId}`)
+}

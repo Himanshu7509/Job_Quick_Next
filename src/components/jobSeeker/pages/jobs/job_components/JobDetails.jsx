@@ -1,21 +1,19 @@
 "use client";
 import { jobdetailsApi } from "@/components/utils/userApi/UserApi";
 import React, { useEffect, useState } from "react";
-import Header from "@/components/jobSeeker/common/header/Header";
 import Footer from "@/components/jobSeeker/common/footer/Footer";
 import Link from "next/link";
-import Loader from "../../../../../app/loading";
 import { getProfileApi } from "@/components/utils/userApi/UserApi";
 import { jobApplyApi } from "@/components/utils/userApi/UserApi";
 import { checkApplyApi } from "@/components/utils/userApi/UserApi";
 import Cookies from "js-cookie";
+import Header from "@/components/jobSeeker/common/header/Header";
 
 const JobDetails = ({ jobId }) => {
   const [data, setData] = useState([]);
   const [skills, setSkills] = useState([]);
   const [category, setCategory] = useState([]);
   const [subcategory, setSubcategory] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [hasApplied, setHasApplied] = useState(false);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
   const [showmodal, setshowmodal] = useState(false);
@@ -37,8 +35,6 @@ const JobDetails = ({ jobId }) => {
       setSubcategory(data.subcategories);
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -116,10 +112,9 @@ const JobDetails = ({ jobId }) => {
 
   return (
     <>
-      <Header />
-      {loading && <Loader />}
+      <Header/>
       <div className="min-h-screen py-8">
-        {!loading && (
+       
           <div className="min-h-screen py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
@@ -332,7 +327,7 @@ const JobDetails = ({ jobId }) => {
               </div>
             </div>
           </div>
-        )}
+        
       </div>
       {showprofilemodal && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-xs">

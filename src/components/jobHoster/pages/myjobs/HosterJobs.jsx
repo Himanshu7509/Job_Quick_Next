@@ -2,13 +2,15 @@
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { getJobsApi } from "@/components/utils/hosterApi/HosterApi";
-import { TbCategory } from "react-icons/tb";
+import { BiSolidCategory } from "react-icons/bi";
 import { FaUserClock } from "react-icons/fa";
 import { GiWallet } from "react-icons/gi";
 import { GrUserWorker } from "react-icons/gr";
 import { BsPersonWorkspace } from "react-icons/bs";
-import { IoLocationOutline } from "react-icons/io5";
+import { FaLocationDot } from "react-icons/fa6";
+
 import Sidebar from "../../common/sidebar/Sidebar";
+import Link from "next/link";
 
 const HosterJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -36,10 +38,10 @@ const HosterJobs = () => {
 
   return (
     <div className="flex">
-    <div>
+    <div className="lg:w-1/4 w-0 fixed left-0 top-0 h-screen">
     <Sidebar/>
     </div>
-      <div className="w-full min-h-screen pt-20 py-12 px-2 sm:px-6 lg:px-8">
+      <div className="w-full lg:ml-76 min-h-screen pt-20 py-12 px-2 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-teal-800 px-6 py-5 flex justify-between items-center">
@@ -136,7 +138,7 @@ const HosterJobs = () => {
                               </div>
 
                               <div className="flex items-center gap-3">
-                                <IoLocationOutline className="w-5 h-5 text-teal-800" />
+                                <FaLocationDot className="w-5 h-5 text-teal-800" />
                                 <div>
                                   <p className="text-sm text-gray-800">
                                     Location
@@ -158,7 +160,7 @@ const HosterJobs = () => {
                                 </div>
                               </div>
                               <div className="flex items-center gap-3">
-                                <TbCategory className="w-5 h-5 text-teal-800" />
+                                <BiSolidCategory className="w-5 h-5 text-teal-800" />
                                 <div>
                                   <p className="text-sm text-gray-800">
                                     Category
@@ -171,17 +173,22 @@ const HosterJobs = () => {
                             </div>
                           )}
 
-                          <div className="flex justify-between w-full mt-4 space-x-4">
-                            <button className="flex-1 h-10 border border-teal-700 bg-transparent text-black rounded-lg text-base font-semibold shadow-md hover:text-white hover:bg-teal-700">
-                              Applicants
-                            </button>
-                            <button
-                              //  onClick={() => setSelectedJob(job._id)}
-                              className="flex-1 h-10 border border-red-500 text-black hover:text-white rounded-lg text-base font-semibold shadow-md  hover:bg-red-500"
-                            >
-                              Delete
-                            </button>
+                          
+
+                          <div className="flex flex-wrap justify-between w-full mt-4 gap-4">
+                              <Link href={`/my-jobs/view-applicant/${job._id}`} className="flex-1 min-w-[120px]">
+                                <button className="h-10 w-full border border-teal-700 bg-transparent text-black rounded-lg text-base font-semibold shadow-md hover:text-white hover:bg-teal-700 transition duration-200">
+                                  Applicants
+                                </button>
+                              </Link>
+                              <button
+                                //  onClick={() => setSelectedJob(job._id)}
+                                className="flex-1 min-w-[120px] h-10 w-full border border-red-500 text-black hover:text-white rounded-lg text-base font-semibold shadow-md hover:bg-red-500 transition duration-200"
+                              >
+                                Delete
+                              </button>
                           </div>
+
                         </div>
                       </div>
                     );

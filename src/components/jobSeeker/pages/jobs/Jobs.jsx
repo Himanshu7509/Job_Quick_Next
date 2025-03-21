@@ -110,7 +110,7 @@ const Jobs = () => {
 
   return (
     <>
-      <Header />
+      <Header/>
       <div className="flex flex-col md:flex-row">
         {/* Filter Toggle Button (Mobile/Tablet) */}
         <button
@@ -151,7 +151,7 @@ const Jobs = () => {
           )}
         </div>
       </div>
-      <Footer />
+          <Footer/>
     </>
   );
 };

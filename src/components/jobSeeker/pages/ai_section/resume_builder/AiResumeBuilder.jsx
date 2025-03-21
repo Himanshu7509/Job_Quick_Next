@@ -16,7 +16,7 @@ import {
   Trophy,
 } from "lucide-react";
 import Footer from "@/components/jobSeeker/common/footer/Footer";
-import Header from "@/components/jobSeeker/common/header/Header";
+
 
 const AiResume = () => {
   const [step, setStep] = useState(1);
@@ -888,7 +888,7 @@ const AiResume = () => {
 
   return (
     <>
-    <Header/>
+
     <div className="min-h-screen bg-gray-50">
      
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 md:py-16">

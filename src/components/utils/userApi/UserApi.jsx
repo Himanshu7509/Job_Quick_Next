@@ -41,10 +41,9 @@ export const getProfileApi = (userId) => {
 };
 
 export const JobsAPi = (filters) => {
-  // Create a copy of the filters to avoid mutating the original
+ 
   const filterParams = { ...filters };
-  
-  // Ensure we only pass non-empty values
+
   Object.keys(filterParams).forEach(key => {
     if (filterParams[key] === "" || filterParams[key] === null || filterParams[key] === undefined) {
       delete filterParams[key];

@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from '../../common/header/Header'
 import Footer from '../../common/footer/Footer'
+import Header from '../../common/header/Header'
 
 const Contact = () => {
   return (
@@ -223,7 +223,7 @@ const Contact = () => {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-      <Footer/>
+    <Footer/>
     </>
   )
 }

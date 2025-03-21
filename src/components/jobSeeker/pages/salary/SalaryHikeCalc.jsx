@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useState } from "react";
-
+import Header from "../../common/header/Header";
 
 export default function SalaryHikeCalc() {
   const [company, setCompany] = useState("");
@@ -24,7 +24,7 @@ export default function SalaryHikeCalc() {
 
   return (
     <>
-
+      <Header />
       {/* Hero Section */}
       <div className="w-full h-40 sm:h-60 bg-gray-900 text-white flex justify-center items-center px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-center">
@@ -41,8 +41,8 @@ export default function SalaryHikeCalc() {
               Calculate Your Potential Salary With Ease
             </h2>
             <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
-              Enter your details below to estimate your expected salary based on your
-              previous CTC and work experience. Stay informed and prepared!
+              Enter your details below to estimate your expected salary based on
+              your previous CTC and work experience. Stay informed and prepared!
             </p>
 
             {expectedSalary && (
@@ -59,7 +59,9 @@ export default function SalaryHikeCalc() {
 
           {/* Right Column - Input Form */}
           <div className="order-1 lg:order-2 bg-gray-50 rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4">Salary Details</h3>
+            <h3 className="text-lg sm:text-xl font-semibold mb-4">
+              Salary Details
+            </h3>
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -126,10 +128,10 @@ export default function SalaryHikeCalc() {
 
         {/* Motivational Quote */}
         <p className="text-center text-gray-600 mt-4 sm:mt-6 text-xs sm:text-sm italic px-4">
-          "Success comes to those who are too busy to be looking for it." – Henry David Thoreau
+          "Success comes to those who are too busy to be looking for it." –
+          Henry David Thoreau
         </p>
       </div>
-
     </>
   );
 }
