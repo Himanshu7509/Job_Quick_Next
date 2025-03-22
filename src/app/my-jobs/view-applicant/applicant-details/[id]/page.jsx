@@ -1,8 +1,9 @@
+import ApplicantDetails from '@/components/jobHoster/pages/myjobs/applicants/ApplicantDetails'
 import React from 'react'
 
-const ApplicantDetailPage = () => {
+const ApplicantDetailPage = ({params}) => {
   return (
-    <div>ApplicantDetailPage</div>
+    <div><ApplicantDetails jobId={params.id} /></div>
   )
 }
 

@@ -11,6 +11,7 @@ import {
   Phone,
 } from "lucide-react";
 import Sidebar from "@/components/jobHoster/common/sidebar/Sidebar";
+import Link from "next/link";
 
 const ViewApplicants = ({ jobId }) => {
   const [applicant, setApplicants] = useState([]);
@@ -120,12 +121,14 @@ const ViewApplicants = ({ jobId }) => {
                 </div>
 
                 <div className="mt-4">
+                  <Link href={`/my-jobs/view-applicant/applicant-details/${item.seekerDetails._id}`}>
                   <button
                     //  onClick={() => handleViewProfile(item.seekerDetails)}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
                     View Profile
                   </button>
+                  </Link>
                 </div>
               </div>
             </div>
