@@ -21,7 +21,6 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ totalJobs: 0, totalApplicants: 0, totalShortlisted: 0 });
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const token = Cookies.get("authToken");
 
 
@@ -78,12 +77,7 @@ const Dashboard = () => {
         <Sidebar />
       </div>
 
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      
 
       <main className="w-full lg:ml-80 xl:ml-80 p-3 sm:p-4 lg:p-6 xl:p-4 overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
