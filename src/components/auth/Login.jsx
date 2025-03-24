@@ -49,6 +49,7 @@ const Login = () => {
           router.push("/");
         } else if (response.data.role === "hoster") {
           router.push("/dashboard");
+          window.location.reload();
         } else {
           // Default fallback
           router.push("/");
@@ -75,7 +76,7 @@ const Login = () => {
       <div className="flex flex-col lg:flex-row justify-center items-center min-h-screen w-full p-4 md:p-8 lg:p-12 backdrop-blur-sm">
         {/* Login Form Container */}
         <div className="w-full max-w-md bg-white p-6 md:p-8 lg:p-12 rounded-lg shadow-lg">
-          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">Sign In</h2>
+          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">Login</h2>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

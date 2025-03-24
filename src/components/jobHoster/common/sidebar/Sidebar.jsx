@@ -20,7 +20,6 @@ const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [userName, setUserName] = useState("");
   const [data, setData] = useState("");
 
   const userId = Cookies.get("userId");
@@ -40,26 +39,15 @@ const Sidebar = () => {
     setData(response.data);
     console.log(response);
   };
+
   useEffect(() => {
     getName();
   }, []);
 
   const navItems = [
-    {
-      icon: <User className="w-5 h-5" />,
-      label: "My Profile",
-      path: "/host-profile",
-    },
-    {
-      icon: <Briefcase className="w-5 h-5" />,
-      label: "My Jobs",
-      path: "/my-jobs",
-    },
-    {
-      icon: <CalendarPlus className="w-5 h-5" />,
-      label: "Post Job",
-      path: "/post-job",
-    },
+    { icon: <User className="w-5 h-5" />, label: "My Profile", path: "/host-profile" },
+    { icon: <Briefcase className="w-5 h-5" />, label: "My Jobs", path: "/my-jobs" },
+    { icon: <CalendarPlus className="w-5 h-5" />, label: "Post Job", path: "/post-job" },
   ];
 
   const isActiveRoute = (path) => pathname === path;
@@ -68,15 +56,15 @@ const Sidebar = () => {
     <>
       {/* Mobile Menu Button */}
       <button
-        className="fixed top-4 left-4 z-50 block lg:hidden bg-teal-900 p-2 rounded text-white"
+        className="fixed top-4 left-4 z-50 block lg:hidden p-2 rounded text-teal-900"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        {isOpen ? <X className="w-6 h-6 text-white relative left-[195px] mt-1" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:relative inset-y-0 left-0 z-40 w-full sm:w-1/2 lg:w-80 bg-teal-900 p-6 transform transition-transform 
+        className={`fixed lg:relative inset-y-0 left-0 z-40 w-64 bg-teal-900 p-6 transform transition-transform
         ${isOpen ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 lg:flex flex-col h-screen`}
       >
@@ -140,7 +128,7 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar Overlay - Click to Close */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 lg:hidden"

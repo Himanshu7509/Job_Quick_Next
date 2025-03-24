@@ -12,42 +12,71 @@ import { FaLocationDot } from "react-icons/fa6";
 import Sidebar from "../../common/sidebar/Sidebar";
 import Link from "next/link";
 
+const JOB_LIMIT = 6;
+
 const HosterJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (newPage) => {
     try {
+      setIsLoading(true);
       const hosterId = Cookies.get("userId");
       if (!hosterId) {
         console.error("Hoster ID not found in cookies");
         return;
       }
-      const response = await getJobsApi(hosterId);
+
+      const response = await getJobsApi(hosterId, JOB_LIMIT, newPage);
       const data = response.data.jobs;
-      console.log("Fetched Jobs:", data);
-      setJobs(data);
+
+      if (data.length < JOB_LIMIT) {
+        setHasMore(false);
+      }
+
+      setJobs((prevJobs) => {
+        const newJobs = [...prevJobs, ...data];
+        const uniqueJobs = Array.from(
+          new Map(newJobs.map((job) => [job._id, job])).values()
+        );
+        return uniqueJobs;
+      });
     } catch (error) {
-      console.error("Error fetching jobs:", error);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchJobs();
+    fetchJobs(page);
   }, []);
+
+  const loadMoreJobs = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchJobs(nextPage);
+  };
+
+  const showLessJobs = () => {
+    setPage(1);
+    setJobs(jobs.slice(0, JOB_LIMIT));
+    setHasMore(true);
+  };
 
   return (
     <div className="flex">
-    <div className="lg:w-1/4 w-0 fixed left-0 top-0 h-screen">
-    <Sidebar/>
-    </div>
-      <div className="w-full lg:ml-76 min-h-screen pt-20 py-12 px-2 sm:px-6 lg:px-8">
+      <div className="lg:w-1/4 w-0 fixed left-0 top-0 h-screen">
+        <Sidebar />
+      </div>
+      <div className="w-full lg:ml-76 min-h-screen pt-6 py-12 px-2 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-teal-800 px-6 py-5 flex justify-between items-center">
-              <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                Posted Jobs
-              </h2>
+              <h2 className="text-3xl font-bold text-white">Posted Jobs</h2>
             </div>
 
             <div className="p-4 md:p-6">
@@ -173,49 +202,45 @@ const HosterJobs = () => {
                             </div>
                           )}
 
-                          
-
                           <div className="flex flex-wrap justify-between w-full mt-4 gap-4">
-                              <Link href={`/my-jobs/view-applicant/${job._id}`} className="flex-1 min-w-[120px]">
-                                <button className="h-10 w-full border border-teal-700 bg-transparent text-black rounded-lg text-base font-semibold shadow-md hover:text-white hover:bg-teal-700 transition duration-200">
-                                  Applicants
-                                </button>
-                              </Link>
-                              <button
-                                //  onClick={() => setSelectedJob(job._id)}
-                                className="flex-1 min-w-[120px] h-10 w-full border border-red-500 text-black hover:text-white rounded-lg text-base font-semibold shadow-md hover:bg-red-500 transition duration-200"
-                              >
-                                Delete
+                            <Link
+                              href={`/my-jobs/view-applicant/${job._id}`}
+                              className="flex-1 min-w-[120px]"
+                            >
+                              <button className="h-10 w-full border border-teal-700 bg-transparent text-black rounded-lg text-base font-semibold shadow-md hover:text-white hover:bg-teal-700 transition duration-200">
+                                Applicants
                               </button>
+                            </Link>
+                            <button className="flex-1 min-w-[120px] h-10 w-full border border-red-500 text-black hover:text-white rounded-lg text-base font-semibold shadow-md hover:bg-red-500 transition duration-200">
+                              Delete
+                            </button>
                           </div>
-
                         </div>
                       </div>
                     );
                   })}
                 </div>
               )}
-              {/* {selectedJob && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
-        <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Are you sure you want to delete this job?</h2>
-          <div className="mt-6 flex justify-center gap-6">
-            <button
-              onClick={handleDeleteJob}
-              className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition shadow-md"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setSelectedJob(null)}
-              className="bg-gray-300 text-black px-6 py-2 rounded-lg hover:bg-gray-400 transition shadow-md"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    )} */}
+
+              <div className="flex justify-center gap-4 mt-6">
+                {jobs.length > 0 && hasMore && (
+                  <button
+                    onClick={loadMoreJobs}
+                    disabled={isLoading}
+                    className="bg-teal-700 text-white px-6 py-2 rounded-lg shadow-md hover:bg-teal-800"
+                  >
+                    Load More
+                  </button>
+                )}
+                {jobs.length > JOB_LIMIT && (
+                  <button
+                    onClick={showLessJobs}
+                    className="bg-gray-400 text-white px-6 py-2 rounded-lg shadow-md hover:bg-gray-500"
+                  >
+                    Show Less
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

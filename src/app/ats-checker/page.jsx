@@ -1,8 +1,9 @@
+import AtsChecker from '@/components/jobSeeker/pages/ai_section/ats_checker/AtsChecker'
 import React from 'react'
 
 const AtsPage = () => {
   return (
-    <div>AtsPage</div>
+    <div><AtsChecker/></div>
   )
 }
 

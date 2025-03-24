@@ -42,9 +42,6 @@ export const getCategory = () => {
 };
 
 
-export const getJobsApi = (hosterId) =>{
-  return Api.get(`/job/dashboard/${hosterId}`);
-}
 
 const userId = Cookies.get("userId");
 export const StatData = () =>{
@@ -55,6 +52,23 @@ export const LineCart = () => {
   return Api.get(`applicant/graph/:jobId`)
 }
 
-export const viewappicantAPI = (jobId) => {
-  return Api.get(`/applicant/get?jobId=${jobId}`)
+export const getJobsApi = (hosterId,limit,page) =>{
+  return Api.get(`/job/dashboard/${hosterId}?limit=${limit}&page=${page}`);
 }
+
+export const viewappicantAPI = (jobId,limit,page,status) => {
+  if(status === undefined || status === null){
+    return Api.get(`/applicant/get?jobId=${jobId}&limit=${limit}&page=${page}`);
+  }
+  else{
+    return Api.get(`/applicant/get?jobId=${jobId}&limit=${limit}&page=${page}&shortListed=${status}`);
+  }
+}
+
+export const appicantAPI = (applicantId) => {
+  return Api.get(`/applicant/details/${applicantId}`)
+}
+
+export const shortlistedApi = (applicantId, payload) => {
+  return Api.patch(`/applicant/shortlisted/${applicantId}`, payload);
+};
