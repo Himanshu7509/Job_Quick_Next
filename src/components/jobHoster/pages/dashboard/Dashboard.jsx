@@ -6,6 +6,7 @@ import { StatData } from '@/components/utils/hosterApi/HosterApi';
 import PieChart from "./charts_and_statistics/charts/PieChart";
 import LineChart from "./charts_and_statistics/charts/LineChart";
 import Sidebar from "../../common/sidebar/Sidebar";
+import { FaBriefcase } from "react-icons/fa";
 import {
   Building2,
   Users,
@@ -184,7 +185,7 @@ const Dashboard = () => {
                       className="flex items-center p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 font-semibold">
-                        {job.title.charAt(0)}
+                      <FaBriefcase />
                       </div>
                       <div className="ml-4 flex-1 min-w-0">
                         <h3 className="text-sm font-medium text-gray-900 truncate">{job.title}</h3>

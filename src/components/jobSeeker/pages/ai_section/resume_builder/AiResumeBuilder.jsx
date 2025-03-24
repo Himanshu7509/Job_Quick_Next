@@ -807,24 +807,24 @@ const AiResume = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full lg:w-2/3">
-              <div className="bg-white rounded-xl shadow-lg p-4 lg:p-8">
-                <div className="space-y-4 lg:space-y-6">
+            <div className="w-full lg:w-2/3 xl:w-1/2">
+              <div className="bg-white rounded-xl shadow-lg p-4 lg:p-8 xl:p-12">
+                <div className="space-y-2 lg:space-y-6 xl:space-y-8">
                   <div className="group">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Add Your Skills
                     </label>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-2 lg:flex-nowrap xl:justify-center">
                       <input
                         type="text"
                         placeholder="e.g., JavaScript"
                         value={currentSkill}
                         onChange={(e) => setCurrentSkill(e.target.value)}
-                        className="flex-1 outline-none p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                        className="flex-1 outline-none p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 lg:w-3/4 xl:w-1/2"
                       />
                       <button
                         onClick={addSkill}
-                        className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700 transition-colors"
+                        className="bg-teal-600 text-white py-2 px-6 rounded-lg hover:bg-teal-700 transition-colors lg:w-1/4 xl:w-1/4"
                       >
                         Add
                       </button>
@@ -866,7 +866,7 @@ const AiResume = () => {
             className="flex items-center gap-2 bg-white text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-200 shadow-sm"
           >
             <ChevronLeft className="w-5 h-5" />
-            Previous Step
+            Previous
           </button>
         )}
 

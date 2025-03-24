@@ -195,7 +195,7 @@ const HosterProfile = () => {
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen">
-        <div className="lg:w-1/4 w-full lg:fixed left-0 top-0 h-screen hidden lg:block">
+        <div className="lg:w-1/4 w-0 fixed left-0 top-0 h-screen">
           <Sidebar />
         </div>
         {isPending ? (
@@ -213,7 +213,7 @@ const HosterProfile = () => {
 
                 <div className="bg-white rounded-xl my-6 shadow-lg p-6 sm:p-8 hover:shadow-xl transition duration-300">
                   <div className="flex flex-col md:flex-row  items-center md:items-start text-center md:text-left">
-                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-lg bg-gray-100 flex items-center justify-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-14 w-14 sm:h-16 sm:w-16 text-gray-400"
