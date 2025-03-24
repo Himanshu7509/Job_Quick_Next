@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { LineCart } from "@/components/utils/hosterApi/HosterApi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,11 +13,10 @@ import {
 } from "chart.js";
 import Cookies from "js-cookie";
 
+// Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const LineChart = ({ jobs  }) => {
-
-  console.log("graph data", jobs);
+const LineChart = ({ jobs }) => {
   const [selectedJob, setSelectedJob] = useState("");
   const [graphData, setGraphData] = useState({
     labels: [],
@@ -26,7 +24,18 @@ const LineChart = ({ jobs  }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const token = Cookies.get("authToken");
+  const [chartRendered, setChartRendered] = useState(false);
+  
+  // Get token from cookies on the client side only
+  const [token, setToken] = useState("");
+  
+  useEffect(() => {
+    // Set token from cookies only on the client side
+    setToken(Cookies.get("authToken") || "");
+    
+    // Signal that the component is mounted and ready for client-side operations
+    setChartRendered(true);
+  }, []);
 
   // Function to get ordered days ending with today
   const getOrderedDays = () => {
@@ -44,29 +53,26 @@ const LineChart = ({ jobs  }) => {
 
   // Check if jobs prop exists and has items before setting selectedJob
   useEffect(() => {
-    if (jobs.length > 0 && !selectedJob) {
+    if (jobs && Array.isArray(jobs) && jobs.length > 0 && !selectedJob) {
       setSelectedJob(jobs[0]._id);
-    
     }
-  }, [jobs]);
+  }, [jobs, selectedJob]);
   
-  // Only fetch graph data when we have a valid selectedJob
+  // Only fetch graph data when we have a valid selectedJob and token
   useEffect(() => {
-    if (selectedJob) {
+    if (selectedJob && token && chartRendered) {
       fetchGraphData(selectedJob);
     }
-  }, [selectedJob]);
+  }, [selectedJob, token, chartRendered]);
   
-  const fetchGraphData = async (selectedJob) => {
+  const fetchGraphData = async (jobId) => {
+    if (!jobId || !token) return;
+    
     setIsLoading(true);
     setError(null);
     
     try {
-      if (!token) {
-        throw new Error("Authentication token is missing");
-      }
-      
-      const response = await fetch(`https://next-jobquick.onrender.com/api/v1/applicant/graph/${selectedJob}`, {
+      const response = await fetch(`https://next-jobquick.onrender.com/api/v1/applicant/graph/${jobId}`, {
         method: 'GET',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -79,8 +85,7 @@ const LineChart = ({ jobs  }) => {
       }
       
       const data = await response.json();
-      console.log("API Response..:", data);
-
+      
       if (data.success && data.data) {
         const orderedDays = getOrderedDays();
         const dataPoints = orderedDays.map(day => {
@@ -94,7 +99,7 @@ const LineChart = ({ jobs  }) => {
       }
     } catch (error) {
       console.error("Error fetching graph data:", error);
-      setError(error.message);
+      setError(error.message || "Failed to load chart data");
     } finally {
       setIsLoading(false);
     }
@@ -216,6 +221,7 @@ const LineChart = ({ jobs  }) => {
               className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg 
                          text-sm text-gray-700 focus:border-teal-500 focus:ring-2 
                          focus:ring-teal-200 outline-none transition-colors duration-200"
+              disabled={!jobs || jobs.length === 0 || isLoading}
             >
               <option value="">Select a job</option>
               {Array.isArray(jobs) && jobs.length > 0 ? (
@@ -245,8 +251,14 @@ const LineChart = ({ jobs  }) => {
                 <p>Error loading data: {error}</p>
               </div>
             </div>
-          ) : (
+          ) : chartRendered && graphData.labels.length > 0 ? (
             <Line data={chartData} options={options} />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-teal-600 text-center p-4">
+                <p>{jobs && jobs.length > 0 ? "Select a job to view data" : "No job data available"}</p>
+              </div>
+            </div>
           )}
         </div>
 
@@ -261,13 +273,17 @@ const LineChart = ({ jobs  }) => {
             <div className="p-2 bg-teal-50 rounded-lg">
               <p className="text-xs text-teal-600">Peak Day</p>
               <p className="text-lg font-semibold text-teal-700">
-                {graphData.labels[graphData.dataPoints.indexOf(Math.max(...graphData.dataPoints))]}
+                {graphData.dataPoints.some(p => p > 0) 
+                  ? graphData.labels[graphData.dataPoints.indexOf(Math.max(...graphData.dataPoints))]
+                  : "N/A"}
               </p>
             </div>
             <div className="p-2 bg-teal-50 rounded-lg">
               <p className="text-xs text-teal-600">Average/Day</p>
               <p className="text-lg font-semibold text-teal-700">
-                {(graphData.dataPoints.reduce((a, b) => a + b, 0) / 7).toFixed(1)}
+                {graphData.dataPoints.length > 0 
+                  ? (graphData.dataPoints.reduce((a, b) => a + b, 0) / 7).toFixed(1)
+                  : "0.0"}
               </p>
             </div>
             <div className="p-2 bg-teal-50 rounded-lg">
