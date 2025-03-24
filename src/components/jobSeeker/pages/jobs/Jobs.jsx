@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback, useTransition } from "react";
+import React, { useEffect, useState, useCallback, useTransition, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { JobsAPi, getCategoriesApi } from "@/components/utils/userApi/UserApi";
 import JobCard from "@/components/jobSeeker/pages/jobs/job_components/JobCard";
@@ -8,7 +8,8 @@ import Loader from '@/components/Loader';
 import Footer from "../../common/footer/Footer";
 import Header from "../../common/header/Header";
 
-const Jobs = () => {
+// This component uses useSearchParams() and needs to be inside Suspense
+const JobsContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -142,58 +143,64 @@ const Jobs = () => {
 
   if (error) {
     return (
-      <>
-        <Header />
-        <div className="flex justify-center items-center p-10">Error: {error}</div>
-      </>
+      <div className="flex justify-center items-center p-10">Error: {error}</div>
     );
   }
 
   return (
+    <div className="flex flex-col md:flex-row">
+      {/* Filter Toggle Button (Mobile/Tablet) */}
+      <button
+        className="md:hidden bg-teal-600 text-white p-2 rounded-md mb-4"
+        onClick={toggleFilterVisibility}
+      >
+        {isFilterOpen ? "Close Filters" : "Open Filters"}
+      </button>
+
+      {/* Job Filters */}
+      <div
+        className={`w-full md:w-80 p-4 ${
+          isFilterOpen ? "" : "hidden md:block"
+        }`}
+      >
+        <JobFilters
+          filters={pendingFilters}
+          onFilterChange={handleFilterChange}
+          onApplyFilters={handleApplyFilters}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          handleCategoryChange={handleCategoryChange}
+          handleSubcategoryChange={handleSubcategoryChange}
+        />
+      </div>
+
+      {/* Job Listings */}
+      <div className="flex-1 p-4">
+        {isPending ? (
+          <Loader /> // Show loader only when transition is pending
+        ) : jobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            {jobs.map((job) => (
+              <JobCard key={job._id} jobs={job} />
+            ))}
+          </div>
+        ) : (
+          <div>No jobs found matching your criteria.</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Main Jobs component with Suspense boundary
+const Jobs = () => {
+  return (
     <>
       <Header />
-      <div className="flex flex-col md:flex-row">
-        {/* Filter Toggle Button (Mobile/Tablet) */}
-        <button
-          className="md:hidden bg-teal-600 text-white p-2 rounded-md mb-4"
-          onClick={toggleFilterVisibility}
-        >
-          {isFilterOpen ? "Close Filters" : "Open Filters"}
-        </button>
-
-        {/* Job Filters */}
-        <div
-          className={`w-full md:w-80 p-4 ${
-            isFilterOpen ? "" : "hidden md:block"
-          }`}
-        >
-          <JobFilters
-            filters={pendingFilters}
-            onFilterChange={handleFilterChange}
-            onApplyFilters={handleApplyFilters}
-            categories={categories}
-            selectedCategory={selectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            handleCategoryChange={handleCategoryChange}
-            handleSubcategoryChange={handleSubcategoryChange}
-          />
-        </div>
-
-        {/* Job Listings */}
-        <div className="flex-1 p-4">
-          {isPending ? (
-            <Loader /> // Show loader only when transition is pending
-          ) : jobs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              {jobs.map((job) => (
-                <JobCard key={job._id} jobs={job} />
-              ))}
-            </div>
-          ) : (
-            <div>No jobs found matching your criteria.</div>
-          )}
-        </div>
-      </div>
+      <Suspense fallback={<Loader />}>
+        <JobsContent />
+      </Suspense>
       <Footer />
     </>
   );

@@ -25,7 +25,8 @@
     "react-markdown": "^10.1.0",
     "recharts": "^2.15.1",
     "swiper": "^11.2.5",
-    "swr": "^2.3.3"
+    "swr": "^2.3.3",
+    "vercel": "^41.4.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
