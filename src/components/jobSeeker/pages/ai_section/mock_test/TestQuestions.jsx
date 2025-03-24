@@ -1,13 +1,25 @@
-"use client"
-import React, { useEffect, useState } from "react";
-import { RefreshCcw, Clock, ArrowLeft, CheckCircle, XCircle, HelpCircle, Loader } from "lucide-react";
+"use client";
+import React, { useEffect, useState, useTransition } from "react";
+import {
+  RefreshCcw,
+  Clock,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  HelpCircle,
+  Loader,
+} from "lucide-react";
 import { postMockApi } from "@/components/utils/userApi/UserApi";
 import Link from "next/link";
+import Header from "@/components/jobSeeker/common/header/Header";
+import Footer from "@/components/jobSeeker/common/footer/Footer";
 
 const Progress = ({ value, className = "" }) => (
   <div className={`w-full bg-gray-200 rounded-full h-2 ${className}`}>
-    <div className="bg-teal-500 h-full rounded-full transition-all duration-300" 
-         style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }} />
+    <div
+      className="bg-teal-500 h-full rounded-full transition-all duration-300"
+      style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
+    />
   </div>
 );
 
@@ -23,9 +35,12 @@ const TestQuestions = ({ category, subcategory }) => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    fetchQuestions();
+    startTransition(() => {
+      fetchQuestions();
+    });
   }, [category, subcategory]);
 
   useEffect(() => {
@@ -119,8 +134,13 @@ const TestQuestions = ({ category, subcategory }) => {
       rawQuestions.forEach((item) => {
         if (item.startsWith("**")) return;
         if (item.startsWith("Q:")) {
-          if (currentQuestion && options.length > 0) processed.push(currentQuestion);
-          currentQuestion = { question: item.substring(2).trim(), options: [], correctAnswer: "" };
+          if (currentQuestion && options.length > 0)
+            processed.push(currentQuestion);
+          currentQuestion = {
+            question: item.substring(2).trim(),
+            options: [],
+            correctAnswer: "",
+          };
           options = [];
         } else if (item.match(/^[A-D]\)/)) {
           const letter = item[0].toLowerCase();
@@ -128,11 +148,16 @@ const TestQuestions = ({ category, subcategory }) => {
           options.push({ letter, text });
           if (currentQuestion) currentQuestion.options = options;
         } else if (item.startsWith("Correct:")) {
-          if (currentQuestion) currentQuestion.correctAnswer = item.split(":")[1].trim().toLowerCase();
+          if (currentQuestion)
+            currentQuestion.correctAnswer = item
+              .split(":")[1]
+              .trim()
+              .toLowerCase();
         }
       });
 
-      if (currentQuestion && options.length > 0) processed.push(currentQuestion);
+      if (currentQuestion && options.length > 0)
+        processed.push(currentQuestion);
       setQuestions(processed);
     } catch (error) {
       console.error("Error processing questions:", error);
@@ -160,8 +185,12 @@ const TestQuestions = ({ category, subcategory }) => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-md mx-auto text-center">
           <Loader className="animate-spin h-12 w-12 text-teal-500 mx-auto mb-4" />
-          <h3 className="text-xl font-medium text-gray-800 mb-2">Loading Questions</h3>
-          <p className="text-gray-600">Please wait while we prepare your test...</p>
+          <h3 className="text-xl font-medium text-gray-800 mb-2">
+            Loading Questions
+          </h3>
+          <p className="text-gray-600">
+            Please wait while we prepare your test...
+          </p>
         </div>
       </div>
     );
@@ -169,9 +198,11 @@ const TestQuestions = ({ category, subcategory }) => {
 
   if (showInstructions) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen lg:mt-20 sm:mt-10 p-4">
         <div className="bg-white shadow-xl rounded-lg p-8 w-full max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Test Instructions</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Test Instructions
+          </h2>
           <div className="space-y-4 mb-8">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-semibold text-lg mb-2">Time Limit</h3>
@@ -183,7 +214,9 @@ const TestQuestions = ({ category, subcategory }) => {
                 <li>Total questions: {questions.length}</li>
                 <li>Each question has 4 options</li>
                 <li>You can navigate between questions</li>
-                <li>You can review and change your answers before submission</li>
+                <li>
+                  You can review and change your answers before submission
+                </li>
               </ul>
             </div>
           </div>
@@ -200,90 +233,120 @@ const TestQuestions = ({ category, subcategory }) => {
 
   if (showResults) {
     return (
-      <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
-        <div className="bg-white shadow-xl rounded-lg p-4 sm:p-8 w-full max-w-4xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <Link href="mock-test">
-              <button className="flex items-center gap-2 px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base w-full sm:w-auto">
-                <ArrowLeft size={16} />
-                Go Back
-              </button>
-            </Link>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Test Results</h2>
-            <button
-              onClick={resetQuiz}
-              className="flex items-center gap-2 px-3 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors text-sm sm:text-base w-full sm:w-auto"
-            >
-              <RefreshCcw size={16} />
-              Reset Quiz
-            </button>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-6">
-            <div className="text-center mb-4">
-              <div className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">{score}%</div>
-              <div className="text-sm sm:text-base text-gray-600">Time Taken: {getTimeTaken()}</div>
-            </div>
-            <Progress value={parseFloat(score)} />
-          </div>
-          
-          <div className="space-y-4">
-            {questions.map((q, i) => (
-              <div key={i} className="bg-gray-50 rounded-lg p-4 transition-all">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 flex-shrink-0">
-                    {answers[i] === q.correctAnswer ? (
-                      <CheckCircle className="text-green-500" size={20} />
-                    ) : (
-                      <XCircle className="text-red-500" size={20} />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-medium text-gray-800 mb-3">{i + 1}. {q.question}</p>
-                    <div className="space-y-2">
-                      {q.options.map((opt) => (
-                        <div
-                          key={opt.letter}
-                          className={`p-2 rounded-lg transition-colors text-sm ${
-                            opt.letter === q.correctAnswer
-                              ? "bg-green-100 border-2 border-green-500"
-                              : opt.letter === answers[i]
-                              ? "bg-red-100 border-2 border-red-500"
-                              : "bg-white border-2 border-gray-200"
-                          }`}
-                        >
-                          {opt.letter.toUpperCase()}) {opt.text}
-                        </div>
-                      ))}
+      <>
+        <Header />
+        {isPending ? (
+          <Loader />
+        ) : (
+          <>
+            <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
+              <div className="bg-white shadow-xl rounded-lg p-4 sm:p-8 w-full max-w-4xl mx-auto">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+                  <Link href="/mock-test">
+                    <button className="flex items-center gap-2 px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base w-full sm:w-auto">
+                      <ArrowLeft size={16} />
+                      Go Back
+                    </button>
+                  </Link>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
+                    Test Results
+                  </h2>
+                  <button
+                    onClick={resetQuiz}
+                    className="flex items-center gap-2 px-3 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors text-sm sm:text-base w-full sm:w-auto"
+                  >
+                    <RefreshCcw size={16} />
+                    Reset Quiz
+                  </button>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-6">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
+                      {score}%
+                    </div>
+                    <div className="text-sm sm:text-base text-gray-600">
+                      Time Taken: {getTimeTaken()}
                     </div>
                   </div>
+                  <Progress value={parseFloat(score)} />
+                </div>
+
+                <div className="space-y-4">
+                  {questions.map((q, i) => (
+                    <div
+                      key={i}
+                      className="bg-gray-50 rounded-lg p-4 transition-all"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 flex-shrink-0">
+                          {answers[i] === q.correctAnswer ? (
+                            <CheckCircle className="text-green-500" size={20} />
+                          ) : (
+                            <XCircle className="text-red-500" size={20} />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-base font-medium text-gray-800 mb-3">
+                            {i + 1}. {q.question}
+                          </p>
+                          <div className="space-y-2">
+                            {q.options.map((opt) => (
+                              <div
+                                key={opt.letter}
+                                className={`p-2 rounded-lg transition-colors text-sm ${
+                                  opt.letter === q.correctAnswer
+                                    ? "bg-green-100 border-2 border-green-500"
+                                    : opt.letter === answers[i]
+                                    ? "bg-red-100 border-2 border-red-500"
+                                    : "bg-white border-2 border-gray-200"
+                                }`}
+                              >
+                                {opt.letter.toUpperCase()}) {opt.text}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
+            </div>
+            <Footer />
+          </>
+        )}
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
+    <div className="min-h-screen p-2 sm:p-4 lg:mt-20 sm:mt-10">
       <div className="bg-white shadow-xl rounded-lg p-4 sm:p-8 w-full max-w-3xl mx-auto">
         {currentQuestion && (
           <div>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div className="w-full sm:w-auto space-y-2">
-                <h2 className="text-xl font-bold text-gray-800">Question {currentIndex + 1}</h2>
-                <Progress value={((currentIndex + 1) / questions.length) * 100} className="w-full sm:w-32" />
+                <h2 className="text-xl font-bold text-gray-800">
+                  Question {currentIndex + 1}
+                </h2>
+                <Progress
+                  value={((currentIndex + 1) / questions.length) * 100}
+                  className="w-full sm:w-32"
+                />
               </div>
-              
+
               <div className="flex items-center gap-4">
-                <div className={`flex items-center gap-2 font-medium ${timeLeft < 10 ? "text-red-500" : "text-gray-600"}`}>
+                <div
+                  className={`flex items-center gap-2 font-medium ${
+                    timeLeft < 10 ? "text-red-500" : "text-gray-600"
+                  }`}
+                >
                   <Clock size={20} />
                   {formatTime(timeLeft)}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 {answers[currentIndex] ? (
                   <CheckCircle size={18} className="text-green-500" />
@@ -295,11 +358,13 @@ const TestQuestions = ({ category, subcategory }) => {
                 </span>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="text-base font-medium text-gray-800">{currentQuestion.question}</p>
+              <p className="text-base font-medium text-gray-800">
+                {currentQuestion.question}
+              </p>
             </div>
-            
+
             <div className="space-y-3">
               {currentQuestion.options.map((opt) => (
                 <label
@@ -326,10 +391,10 @@ const TestQuestions = ({ category, subcategory }) => {
                 </label>
               ))}
             </div>
-            
+
             <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between">
               <button
-                onClick={() => setCurrentIndex(prev => prev - 1)}
+                onClick={() => setCurrentIndex((prev) => prev - 1)}
                 disabled={currentIndex === 0}
                 className={`w-full sm:w-auto px-4 py-2.5 rounded-lg transition-colors text-sm ${
                   currentIndex === 0
@@ -339,7 +404,7 @@ const TestQuestions = ({ category, subcategory }) => {
               >
                 Previous
               </button>
-              
+
               {currentIndex === questions.length - 1 ? (
                 <button
                   onClick={handleTestComplete}
@@ -349,7 +414,7 @@ const TestQuestions = ({ category, subcategory }) => {
                 </button>
               ) : (
                 <button
-                  onClick={() => setCurrentIndex(prev => prev + 1)}
+                  onClick={() => setCurrentIndex((prev) => prev + 1)}
                   className="w-full sm:w-auto px-4 py-2.5 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors text-sm"
                 >
                   Next

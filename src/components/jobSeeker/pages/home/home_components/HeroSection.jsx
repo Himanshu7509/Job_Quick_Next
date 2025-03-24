@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-//import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter } from "next/navigation";
 
 const NumberTicker = ({ endValue }) => {
   const [count, setCount] = useState(0);
@@ -31,28 +31,9 @@ const NumberTicker = ({ endValue }) => {
 };
 
 const HeroSection = () => {
-  // const location = useLocation();
-  //  const navigate = useNavigate();
-
-  // const queryParams = new URLSearchParams(location.search);
-  // const [searchQuery, setSearchQuery] = useState(
-  //   queryParams.get("title") || ""
-  // );
-  //const [searchLocation, setLocation] = useState(queryParams.get('location') || '');
-  // const [category, setCategory] = useState(queryParams.get('category') || '');
-  // const [categories, setCategories] = useState([]);
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
   const [animationStarted, setAnimationStarted] = useState(false);
-
-  // useEffect(() => {
-  //   fetch('https://jobquick.onrender.com/categories')
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       if (data.success) {
-  //         setCategories(data.data.map(cat => cat.title));
-  //       }
-  //     })
-  //     .catch(error => console.error('Error fetching categories:', error));
-  // }, []);
 
   useEffect(() => {
     setAnimationStarted(true);
@@ -61,10 +42,12 @@ const HeroSection = () => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    const params = new URLSearchParams();
-    if (searchQuery.trim()) params.append("title", searchQuery.trim());
-
-    // navigate(`/jobs?${params.toString()}`);
+    if (searchQuery.trim()) {
+      // Navigate to jobs page with search query
+      router.push(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/jobs");
+    }
   };
 
   const stats = [
@@ -83,44 +66,22 @@ const HeroSection = () => {
           Connecting Talent with Opportunity: Your Gateway to Career Success
         </p>
 
-        <form className="relative">
+        <form onSubmit={handleSearch} className="relative">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-lg"></div>
 
           <div className="relative bg-white/90 rounded-lg shadow-xl p-3 flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative ">
-              <div className=" absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="flex-1 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 type="text"
                 placeholder="Job Title or Company"
-               
-               
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-shadow"
               />
             </div>
-
-            {/* <select
-              className="w-full sm:w-48 py-2 px-3 rounded-md border border-gray-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-              value={searchLocation}
-              onChange={(e) => setLocation(e.target.value)}
-            >
-              <option value="">Select Location</option>
-              <option value="ny">New York</option>
-              <option value="sf">San Francisco</option>
-              <option value="ld">London</option>
-            </select> */}
-            {/* 
-            <select
-              className="w-full sm:w-48 py-2 px-3 rounded-md border border-gray-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat, index) => (
-                <option key={index} value={cat}>{cat}</option>
-              ))}
-            </select> */}
 
             <button
               type="submit"
@@ -132,7 +93,6 @@ const HeroSection = () => {
           </div>
         </form>
 
-        {/* Animated Statistics Section */}
         {/* Animated Statistics Section */}
         <div className="mt-12 sm:mt-20 grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 px-4">
           {stats.map((stat, index) => (

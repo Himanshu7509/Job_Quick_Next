@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { jsPDF } from "jspdf";
 
 import {
@@ -15,8 +15,9 @@ import {
   CheckCircle2,
   Trophy,
 } from "lucide-react";
+import Loader from "@/components/Loader";
 import Footer from "@/components/jobSeeker/common/footer/Footer";
-
+import Header from "@/components/jobSeeker/common/header/Header";
 
 const AiResume = () => {
   const [step, setStep] = useState(1);
@@ -46,8 +47,12 @@ const AiResume = () => {
     endDate: "",
     description: "",
   });
-
+  const [isPending, startTransition] = useTransition();
   const [currentSkill, setCurrentSkill] = useState("");
+
+  useEffect(() => {
+    startTransition(() => {});
+  }, []);
 
   const generatePDF = () => {
     if (!personalInfo.fullName) {
@@ -888,47 +893,52 @@ const AiResume = () => {
 
   return (
     <>
-
-    <div className="min-h-screen bg-gray-50">
-     
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 md:py-16">
-        <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
-          <div className="text-center space-y-6">
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-              Create Your Professional Resume
-            </h1>
-            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-              Build a stunning resume in minutes with our intelligent resume
-              builder. Stand out from the crowd and land your dream job.
-            </p>
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8 mt-6">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm md:text-base">
-                  Professional Templates
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm md:text-base">Quick & Easy</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm md:text-base">ATS-Friendly</span>
+      <Header />
+      {isPending ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="min-h-screen bg-gray-50">
+            <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12 md:py-16">
+              <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
+                <div className="text-center space-y-6">
+                  <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
+                    Create Your Professional Resume
+                  </h1>
+                  <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                    Build a stunning resume in minutes with our intelligent
+                    resume builder. Stand out from the crowd and land your dream
+                    job.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-6 md:gap-8 mt-6">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm md:text-base">
+                        Professional Templates
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm md:text-base">Quick & Easy</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm md:text-base">ATS-Friendly</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <main className="max-w-6xl mx-auto px-4 py-12">
+              {renderStepIndicator()}
+              {renderStepContent()}
+              {renderNavigationButtons()}
+            </main>
           </div>
-        </div>
-      </div>
-
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        {renderStepIndicator()}
-        {renderStepContent()}
-        {renderNavigationButtons()}
-      </main>
-
-    </div>
-    <Footer/>
+          <Footer />
+        </>
+      )}
     </>
   );
 };

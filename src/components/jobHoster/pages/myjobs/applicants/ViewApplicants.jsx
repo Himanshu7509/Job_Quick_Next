@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { viewappicantAPI } from "@/components/utils/hosterApi/HosterApi";
 import {
   User,
-  Mail,
   MapPin,
   Briefcase,
   GraduationCap,
@@ -37,6 +36,7 @@ const ViewApplicants = ({ jobId }) => {
       
       if (resetList) {
         setApplicants(response.data.applicants);
+        console.log(response.data.applicants);
       } else {
         setApplicants((prevApplicants) => {
           const newApplicants = [...prevApplicants, ...response.data.applicants];
@@ -127,18 +127,18 @@ const ViewApplicants = ({ jobId }) => {
                 <div className="grid md:grid-cols-2 gap-6">
                   {applicants.map((item, index) => (
                     <div key={index} className="bg-gray-50 h-full rounded-lg p-4 lg:p-6 shadow-md hover:shadow-lg transition">
-                      <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex flex-col items-start gap-4">
                         <div className="flex items-center gap-4">
                           <div className="p-3 bg-teal-100 rounded-full">
-                            <User className="text-teal-600 w-6 h-6" />
+                            <User className="text-teal-600 w-9 h-9" />
                           </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-800">
+                        <div>
+                        <div>
+                            <h3 className="text-xl mb-4 font-bold text-gray-800">
                               {item.seekerDetails.fullName || "N/A"}
                             </h3>
                           </div>
-                        </div>
-                        <div>
+                          <div>
                           {item.shortListed ? (
                             <span className="px-3 py-1 bg-green-200 text-green-700 rounded-full text-sm font-semibold">
                               ✅ Shortlisted
@@ -149,6 +149,9 @@ const ViewApplicants = ({ jobId }) => {
                             </span>
                           )}
                         </div>
+                        </div>
+                        </div>
+                       
                       </div>
                       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                         <div className="flex items-center gap-4">
@@ -167,29 +170,16 @@ const ViewApplicants = ({ jobId }) => {
                           <Briefcase className="w-5 h-5" />
                           <span>{item.seekerDetails.expPosition || "N/A"}</span>
                         </div>
-                        <div className="col-span-1 sm:col-span-2 flex items-start gap-4 rounded-lg">
-                          <Mail className="w-5 h-5 mt-1" />
-                          <p className="text-sm text-gray-500">
-                            {item.seekerDetails.email || "N/A"}
-                          </p>
-                        </div>
                         <div className="col-span-1 sm:col-span-2 flex items-start gap-4 pb-4 rounded-lg">
                           <Star className="w-5 h-5 mt-1" />
                           <div>
-                            <p className="text-sm mb-4 font-semibold text-gray-600">Skills</p>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {item.seekerDetails?.skills?.length > 0 ? (
-                                item.seekerDetails?.skills.flatMap((skill) =>
-                                  skill.split(",").map((s) => s.trim())
-                                ).slice(0, 3).map((skill, index) => (
-                                  <span key={index} className="px-3 py-1 text-sm font-medium bg-teal-100 text-teal-700 rounded-full">
-                                    {skill}
-                                  </span>
-                                ))
-                              ) : (
-                                <span className="text-gray-500">N/A</span>
-                              )}
-                            </div>
+                            <p className="text-sm mb-4 font-semibold text-gray-600">Project URL</p>
+                            <Link href={item.seekerDetails.projectUrl}
+                            className="text-blue-600 hover:underline"
+                            target="_blank" 
+                             rel="noopener noreferrer" >
+                            {item.seekerDetails.projectUrl || "N/A"}
+                            </Link>
                           </div>
                         </div>
                       </div>

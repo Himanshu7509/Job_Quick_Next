@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import Header from "@/components/jobSeeker/common/header/Header";
+import Sidebar from "@/components/jobHoster/common/sidebar/Sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -69,7 +69,7 @@ const Sidebar = () => {
         lg:translate-x-0 lg:flex flex-col h-screen`}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center mb-6">
+        <Link href="/dashboard" className="flex items-center mb-6">
           <BriefcaseBusiness className="w-6 h-6 text-white" />
           <span className="ml-2 text-2xl font-bold text-white">Job Quick</span>
         </Link>

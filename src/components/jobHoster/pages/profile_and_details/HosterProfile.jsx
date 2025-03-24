@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { postHosterProfileApi, patchHosterProfileApi, getHosterProfileApi } from "@/components/utils/hosterApi/HosterApi";
+import Sidebar from "../../common/sidebar/Sidebar";
 
 const HosterProfile = () => {
   const [formData, setFormData] = useState({
@@ -43,7 +44,7 @@ const HosterProfile = () => {
         } catch (error) {
           if (error.response && error.response.status === 404) {
             console.log("No profile found for this user, showing empty form");
-            setIsEditMode(true); // If no profile, start in edit mode to create one
+            setIsEditMode(true); 
           } else {
             console.error("Error fetching profile:", error);
           }
@@ -93,7 +94,7 @@ const HosterProfile = () => {
         if (response.status === 200 || response.status === 201) {
           setStatusMessage(isEditing ? "Profile updated successfully!" : "Profile created successfully!");
           setStatusType("success");
-          setIsEditMode(false); // Exit edit mode after successful save
+          setIsEditMode(false); 
         }
       } catch (error) {
         console.error("Server Error:", error);
@@ -104,10 +105,10 @@ const HosterProfile = () => {
 
   const toggleEditMode = () => {
     if (isEditMode) {
-      // If currently in edit mode, submit the form
+    
       document.getElementById("profileForm").requestSubmit();
     } else {
-      // Enter edit mode
+     
       setIsEditMode(true);
     }
   };
@@ -158,138 +159,123 @@ const HosterProfile = () => {
 
   return (
     <>
-      <div className="bg-gray-100 min-h-screen py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Enhanced Profile Header */}
-        <div className="relative mb-8">
-          {/* Header Background */}
-          <div className="h-60 bg-teal-600 rounded-t-2xl"></div>
+     <div className="flex flex-col lg:flex-row min-h-screen">
+ 
+  <div className="lg:w-1/4 w-full lg:fixed left-0 top-0 h-screen hidden lg:block">
+    <Sidebar />
+  </div>
 
-          {/* Profile Content */}
-          <div className="relative bg-white rounded-2xl shadow-xl mx-4 -mt-24 p-6">
-            <div className="flex flex-col items-center">
-              {/* Profile Image with Online Indicator */}
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="absolute bottom-2 right-2">
-                  <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                  <div className="absolute inset-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-ping"></div>
-                </div>
-              </div>
 
-              {/* User Info */}
-              <div className="mt-4 text-center">
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {formData.fullName || "Profile"}
-                </h1>
-                <p className="text-gray-600">{formData.phoneNumber || "Add your contact info"}</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4 mt-6">
-                <button 
-                  onClick={toggleEditMode}
-                  className={`flex cursor-pointer items-center gap-2 px-6 py-2 rounded-lg transition-colors duration-200 ${
-                    isEditMode 
-                      ? "bg-indigo-50 text-blue-600 hover:bg-indigo-100" 
-                      : "bg-indigo-50 text-blue-600 hover:bg-indigo-100"
-                  }`}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    {isEditMode ? (
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    ) : (
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    )}
-                  </svg>
-                  <span>{isEditMode ? "Save Profile" : "Edit Profile"}</span>
-                </button>
-                <button
-                  className="flex items-center cursor-pointer gap-2 px-6 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span>Delete Account</span>
-                </button>
-              </div>
+  <div className="w-full lg:ml-72  min-h-screen py-8 px-4">
+    <div className="max-w-4xl  rounded-2xl mx-auto">
+    
+      <div className="bg-teal-800 rounded-t-2xl px-6 py-5 flex justify-between items-center">
+              <h2 className="text-3xl font-bold text-white">Profile</h2>
             </div>
-          </div>
-        </div>
 
-        {statusMessage && (
+            <div className="bg-white rounded-xl my-6 shadow-lg p-6 sm:p-8 hover:shadow-xl transition duration-300">
+  <div className="flex flex-col md:flex-row  items-center md:items-start text-center md:text-left">
+  
+    <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-14 w-14 sm:h-16 sm:w-16 text-gray-400"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </div>
+
+    <div className="mt-4 md:mt-0 md:ml-4 flex flex-col items-center md:items-start">
+      <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+        {formData.fullName || "Profile"}
+      </h1>
+  
+      <button
+        onClick={toggleEditMode}
+        className="mt-4 flex items-center gap-2  text-blue-600 hover:text-blue-900 transition duration-200"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          {isEditMode ? (
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
+          ) : (
+            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+          )}
+        </svg>
+        <span>{isEditMode ? "Save Profile" : "Edit Profile"}</span>
+      </button>
+    </div>
+
+ 
+    <button
+      className="md:ml-auto mt-4 flex items-center gap-2 px-2 sm:px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span>Delete Account</span>
+    </button>
+  </div>
+</div>
+
+{statusMessage && (
           <div className={`mb-6 p-4 rounded-xl shadow-md ${statusType === "success" ? "bg-green-50 text-green-700 border border-green-100" : "bg-red-50 text-red-700 border border-red-100"}`}>
             {statusMessage}
           </div>
         )}
 
-        {/* Main Form */}
-        <form id="profileForm" onSubmit={handleSubmit}>
-          {/* Personal Information Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-indigo-50 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-gray-800">Personal Details</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {renderInput("fullName", "Full Name")}
-              {renderInput("phoneNumber", "Phone Number")}
-              {renderSelect("gender", "Gender", ["Male", "Female", "Other"])}
-              {renderInput("companyURL", "Company URL")}
-            </div>
+
+     
+      <form id="profileForm" onSubmit={handleSubmit} className="space-y-6">
+      
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition duration-300">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">Personal Details</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+            {renderInput("fullName", "Full Name")}
+            {renderInput("phoneNumber", "Phone Number")}
+            {renderSelect("gender", "Gender", ["Male", "Female", "Other"]) }
+            {renderInput("companyURL", "Company URL")}
           </div>
+        </div>
 
-          {/* Address Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-indigo-50 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-gray-800">Location</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">{renderInput("address", "Address")}</div>
-              {renderInput("city", "City")}
-              {renderInput("state", "State")}
-              {renderInput("country", "Country")}
-              {renderInput("pincode", "Pincode")}
-            </div>
+    
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 hover:shadow-xl transition duration-300">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800">Location</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+            <div className="sm:col-span-2">{renderInput("address", "Address")}</div>
+            {renderInput("city", "City")}
+            {renderInput("state", "State")}
+            {renderInput("country", "Country")}
+            {renderInput("pincode", "Pincode")}
           </div>
-
-          
-
-          {/* Hidden submit button for form submission */}
-          <button type="submit" className="hidden"></button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
     </>
   )
 }
