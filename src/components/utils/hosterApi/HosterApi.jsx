@@ -76,3 +76,7 @@ export const shortlistedApi = (applicantId, payload) => {
 export const HosterDataTable = () => {  
   return Api.get(`job/table/${userId}`); 
 }
+
+export const deletehosterApi = (userId) => {
+  return Api.delete(`auth/delete/hoster/${userId}`)
+ }

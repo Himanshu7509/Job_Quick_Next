@@ -1,16 +1,19 @@
 "use client";
 
 import React, { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
   postHosterProfileApi,
   patchHosterProfileApi,
   getHosterProfileApi,
+  deletehosterApi,
 } from "@/components/utils/hosterApi/HosterApi";
 import Sidebar from "../../common/sidebar/Sidebar";
 import Loader from "@/components/Loader";
 
 const HosterProfile = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -20,7 +23,7 @@ const HosterProfile = () => {
     state: "",
     country: "",
     pincode: "",
-    comapanytURL: "",
+    companyURL: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -28,6 +31,7 @@ const HosterProfile = () => {
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -41,6 +45,7 @@ const HosterProfile = () => {
         if (response && response.data && response.data._id) {
           const profileData = response.data;
 
+          // Ensure all fields have a default empty string
           setFormData({
             fullName: profileData.fullName || "",
             phoneNumber: profileData.phoneNumber || "",
@@ -75,92 +80,114 @@ const HosterProfile = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setStatusMessage("");
-    
-      const userId = Cookies.get("userId");
-      if (!userId) {
-        console.error("Critical Error: No user ID found in cookies");
-        setStatusMessage("Authentication failed. Please log in again.");
-        setStatusType("error");
-        return;
-      }
-    
-      try {
-        // Correctly extract profile ID
-        const actualProfileId = 
-          typeof profileId === 'object' && profileId._id 
-            ? profileId._id 
-            : (profileId || userId);
-    
-        console.log("Actual Profile ID for Update:", actualProfileId);
-    
-        const cleanFormData = {
-          ...formData,
-          userId: userId,
-          skills: formData.skills 
-            ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
-            : []
-        };
-    
-        // Remove the _id object from the data
-        delete cleanFormData._id;
-    
-        let response;
-        if (isEditing && actualProfileId) {
-          console.log('Updating profile with:', {
-            profileId: actualProfileId,
-            data: cleanFormData
-          });
-    
-          response = await patchHosterProfileApi(actualProfileId, cleanFormData);
-        } else {
-          response = await postHosterProfileApi({
-            ...cleanFormData,
-            _id: userId
-          });
-        }
-    
-        console.log('Full API Submission Response:', response);
-    
-        // Flexible profile identifier extraction
-        const profileIdentifier = 
-          response?.data?._id || 
-          response?.data?.seekerDetails?._id || 
-          response?.data?.userId || 
-          actualProfileId || 
-          userId;
-    
-        if (profileIdentifier) {
-          setProfileId(profileIdentifier);
-          setIsEditing(true);
-          setStatusMessage("Profile saved successfully!");
-          setStatusType("success");
-          setIsEditMode(false);
-        } else {
-          throw new Error("Could not retrieve or generate profile identifier");
-        }
-    
-      } catch (error) {
-        console.error('Comprehensive Profile Submission Error:', {
-          errorResponse: error.response?.data,
-          errorMessage: error.message,
-          errorStatus: error.response?.status,
-          fullError: error
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatusMessage("");
+
+    const userId = Cookies.get("userId");
+    if (!userId) {
+      console.error("Critical Error: No user ID found in cookies");
+      setStatusMessage("Authentication failed. Please log in again.");
+      setStatusType("error");
+      return;
+    }
+
+    try {
+      // More robust profile ID extraction
+      const actualProfileId = profileId || userId;
+
+      console.log("Actual Profile ID for Update:", actualProfileId);
+
+      const cleanFormData = {
+        ...formData,
+        userId: userId,
+      };
+
+      let response;
+      if (isEditing && actualProfileId) {
+        console.log("Updating profile with:", {
+          profileId: actualProfileId,
+          data: cleanFormData,
         });
-    
-        // Enhanced error message extraction
-        const errorMessage = 
-          error.response?.data?.message || 
-          error.response?.data?.error || 
-          error.message || 
-          "Failed to save profile. Please check your information.";
-    
-        setStatusMessage(errorMessage);
-        setStatusType("error");
+
+        response = await patchHosterProfileApi(actualProfileId, cleanFormData);
+      } else {
+        response = await postHosterProfileApi({
+          ...cleanFormData,
+          _id: userId,
+        });
       }
-    };
+
+      console.log("Full API Submission Response:", response);
+
+      // More flexible profile identifier extraction
+      const profileIdentifier =
+        response?.data?._id ||
+        response?.data?.seekerDetails?._id ||
+        response?.data?.userId ||
+        actualProfileId ||
+        userId;
+
+      if (profileIdentifier) {
+        setProfileId(profileIdentifier);
+        setIsEditing(true);
+        setStatusMessage("Profile saved successfully!");
+        setStatusType("success");
+        setIsEditMode(false);
+      } else {
+        throw new Error("Could not retrieve or generate profile identifier");
+      }
+    } catch (error) {
+      console.error("Comprehensive Profile Submission Error:", {
+        errorResponse: error.response?.data,
+        errorMessage: error.message,
+        errorStatus: error.response?.status,
+        fullError: error,
+      });
+
+      // Enhanced error message extraction
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to save profile. Please check your information.";
+
+      setStatusMessage(errorMessage);
+      setStatusType("error");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const userId = Cookies.get("userId");
+    if (!userId) {
+      setStatusMessage("Authentication failed. Please log in again.");
+      setStatusType("error");
+      return;
+    }
+
+    try {
+      await deletehosterApi(userId);
+      console.log("Account deleted successfully");
+      // Clear all cookies
+      Cookies.remove("authToken");
+      Cookies.remove("userId");
+
+      // Redirect to login or home page
+      router.push("/user-login");
+    } catch (error) {
+      console.error("Delete Account Error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to delete account. Please try again.";
+
+      setStatusMessage(errorMessage);
+      setStatusType("error");
+      setIsDeleteModalOpen(false);
+    }
+  };
 
   const toggleEditMode = () => {
     if (isEditMode) {
@@ -169,7 +196,6 @@ const HosterProfile = () => {
       setIsEditMode(true);
     }
   };
-
   const renderInput = (id, label, type = "text") => (
     <div>
       <label
@@ -295,21 +321,56 @@ const HosterProfile = () => {
                       </button>
                     </div>
 
-                    <button className="md:ml-auto mt-4 flex items-center gap-2 px-2 sm:px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                    <div className="mt-4 md:ml-auto flex items-center">
+                      <button
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span>Delete Account</span>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>Delete Account</span>
+                      </button>
+                    </div>
+
+                    {/* Delete Confirmation Modal */}
+                    {isDeleteModalOpen && (
+                      <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full">
+                          <h2 className="text-xl font-bold text-red-600 mb-4">
+                            Delete Account
+                          </h2>
+                          <p className="text-gray-600 mb-6">
+                            Are you sure you want to delete your account? This
+                            action cannot be undone and will permanently remove
+                            all your data.
+                          </p>
+                          <div className="flex justify-end space-x-4">
+                            <button
+                              onClick={() => setIsDeleteModalOpen(false)}
+                              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleDeleteAccount}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                            >
+                              Delete Account
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

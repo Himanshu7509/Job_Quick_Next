@@ -1,25 +1,20 @@
-
-"use client"
-import React from "react";
-import {
-  UserCheck,
-  Clock,
-  MapPin,
-  Laptop,
-} from "lucide-react";
+"use client";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie"; // npm install js-cookie
+import { UserCheck, Clock, MapPin, Laptop } from "lucide-react";
 import { GiWallet } from "react-icons/gi";
 import { TbCategory } from "react-icons/tb";
-//import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/autoplay";
 import { Autoplay } from "swiper/modules";
+import { JobsAPi } from "@/components/utils/userApi/UserApi";
 import Link from "next/link";
 
 const RecentJobs = () => {
- // const navigate = useNavigate();
+  const [jobsData, setJobsData] = useState([]);
 
-  const jobs = [
+  const staticJobs = [
     {
       id: 1,
       title: "DevOps Engineer",
@@ -37,7 +32,7 @@ const RecentJobs = () => {
       title: "Frontend Developer",
       company: "TechVerse Solution",
       category: "IT & Networking",
-      type: " Fulltime",
+      type: "Fulltime",
       salary: "5LPA - 13LPA",
       location: "Bengaluru",
       worktype: "Hybrid",
@@ -60,7 +55,7 @@ const RecentJobs = () => {
       id: 4,
       title: "Tax Analyst",
       company: " TaxMaster Consultants",
-      category: "Accounting ",
+      category: "Accounting",
       type: "Fulltime",
       salary: "5LPA - 12LPA",
       location: "New Delhi, India",
@@ -71,7 +66,7 @@ const RecentJobs = () => {
     {
       id: 5,
       title: "B2B Sales Manager",
-      company: " GrowthHive Marketing",
+      company: "GrowthHive Marketing",
       category: "Sales & Marketing",
       type: "Fulltime",
       salary: "7LPA - 14LPA",
@@ -82,13 +77,41 @@ const RecentJobs = () => {
     },
   ];
 
-  // Function to handle job card click
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const authToken = Cookies.get("authToken");
+      console.log("Auth Token from Cookie:", authToken);
+
+      if (!authToken) {
+        console.log("No token found. Showing static jobs.");
+        setJobsData(staticJobs);
+        return;
+      }
+
+      try {
+        console.log("Token found. Fetching jobs from API...");
+        const response = await JobsAPi(authToken); // make sure your API call includes the token
+        console.log("API response:", response?.data);
+
+        if (response?.data?.jobs?.length > 0) {
+          setJobsData(response.data.jobs);
+        } else {
+          console.log("No jobs from API, falling back to static.");
+          setJobsData(staticJobs);
+        }
+      } catch (err) {
+        console.error("API call failed. Falling back to static jobs.", err);
+        setJobsData(staticJobs);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const handleJobClick = (job) => {
-    navigate(
-      `/jobs?title=${encodeURIComponent(
-        job.title
-      )}&company=${encodeURIComponent(job.company)}`
-    );
+    window.location.href = `/jobs?title=${encodeURIComponent(
+      job.title
+    )}&company=${encodeURIComponent(job.company)}`;
   };
 
   return (
@@ -131,24 +154,18 @@ const RecentJobs = () => {
           }}
           className="pb-12"
         >
-          {jobs.map((job) => (
-            <SwiperSlide key={job.id}>
+          {jobsData.map((job) => (
+            <SwiperSlide key={job.id || job._id}>
               <div
                 className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col min-h-[25rem] p-8 hover:-translate-y-1 cursor-pointer"
                 onClick={() => handleJobClick(job)}
               >
                 <div className="flex items-start gap-6 relative">
-                  <button
-                    className="absolute right-0 top-0 text-gray-300 hover:text-teal-600 transition-colors duration-200"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent card click when clicking bookmark
-                    }}
-                  ></button>
                   <div className="relative">
                     <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
                       <img
-                        src={job.logo}
-                        alt={job.company}
+                        src={job.logo || "https://www.pngkey.com/png/full/191-1911374_company-building-png-office-building-png.png"} // fallback if missing
+                        alt={job.companyName || "Company Logo"}
                         className="w-16 h-16 object-cover"
                       />
                     </div>
@@ -158,26 +175,30 @@ const RecentJobs = () => {
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors duration-200">
                       {job.title}
                     </h3>
-                    <p className="text-gray-500 text-base">{job.company}</p>
+                    <p className="text-gray-500 text-base">{job.companyName}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6 mt-12 text-gray-600 text-base">
                   <div className="flex items-center gap-3">
                     <TbCategory className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.category}</span>
+                    <span className="truncate">
+                      {job.category?.title || "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <GiWallet className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.salary}</span>
+                    <span className="truncate">
+                      {job.minPackage} - {job.maxPackage}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.type}</span>
+                    <span className="truncate">{job.jobType}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Laptop className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.worktype}</span>
+                    <span className="truncate">{job.workType}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <UserCheck className="w-5 h-5 text-teal-600" />

@@ -6,7 +6,9 @@ import {
   postProfileApi,
   patchProfileApi,
   getProfileApi,
+  deleteUserApi
 } from "@/components/utils/userApi/UserApi";
+import { useRouter } from "next/navigation";
 import Footer from "../../common/footer/Footer";
 import Header from "../../common/header/Header";
 import Loader from "@/components/Loader";
@@ -36,6 +38,7 @@ const SeekerProfile = () => {
     expStartYear: "",
     expEndYear: "",
   });
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [profileId, setProfileId] = useState(null);
@@ -43,6 +46,7 @@ const SeekerProfile = () => {
   const [statusType, setStatusType] = useState("");
   const [isPending, startTransition] = useTransition();
   const [email, setemail] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -102,6 +106,38 @@ const SeekerProfile = () => {
       fetchProfileData();
     });
   }, []);
+
+  const handleDeleteAccount = async () => {
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        setStatusMessage("Authentication failed. Please log in again.");
+        setStatusType("error");
+        return;
+      }
+  
+      try {
+        await deleteUserApi(userId);
+  
+        // Clear all cookies
+        Cookies.remove("authToken");
+        Cookies.remove("userId");
+  
+        // Redirect to login or home page
+        router.push("/user-login");
+      } catch (error) {
+        console.error("Delete Account Error:", error);
+  
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to delete account. Please try again.";
+  
+        setStatusMessage(errorMessage);
+        setStatusType("error");
+        setIsDeleteModalOpen(false);
+      }
+    };
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -349,21 +385,56 @@ const SeekerProfile = () => {
                         {isEditMode ? "Save Profile" : "Edit Profile"}
                       </span>
                     </button>
-                    <button className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                    
+                      <button
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span>Delete Account</span>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>Delete Account</span>
+                      </button>
+                    
+
+                    {/* Delete Confirmation Modal */}
+                    {isDeleteModalOpen && (
+                      <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full">
+                          <h2 className="text-xl font-bold text-red-600 mb-4">
+                            Delete Account
+                          </h2>
+                          <p className="text-gray-600 mb-6">
+                            Are you sure you want to delete your account? This
+                            action cannot be undone and will permanently remove
+                            all your data.
+                          </p>
+                          <div className="flex justify-end space-x-4">
+                            <button
+                              onClick={() => setIsDeleteModalOpen(false)}
+                              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleDeleteAccount}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                            >
+                              Delete Account
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

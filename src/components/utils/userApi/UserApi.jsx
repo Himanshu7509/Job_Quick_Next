@@ -85,8 +85,8 @@ export const jobApplyApi = (post) => {
   return userApi.get(`applicant/check?jobId=${jobId}&applicantId=${applicantId}`)
  }
 
- export const deleteUserApi = (seekerId) => {
-  return userApi.delete(`auth/delete/seeker/${seekerId}`)
+ export const deleteUserApi = (userId) => {
+  return userApi.delete(`auth/delete/seeker/${userId}`)
  }
 
  export const showJobsApi = (userId,limit,page) => {
