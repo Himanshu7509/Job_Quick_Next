@@ -81,81 +81,83 @@ const HosterProfile = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatusMessage("");
-
-    const userId = Cookies.get("userId");
-    if (!userId) {
-      console.error("Critical Error: No user ID found in cookies");
-      setStatusMessage("Authentication failed. Please log in again.");
-      setStatusType("error");
-      return;
-    }
-
-    try {
-      // More robust profile ID extraction
-      const actualProfileId = profileId || userId;
-
-      console.log("Actual Profile ID for Update:", actualProfileId);
-
-      const cleanFormData = {
-        ...formData,
-        userId: userId,
-      };
-
-      let response;
-      if (isEditing && actualProfileId) {
-        console.log("Updating profile with:", {
-          profileId: actualProfileId,
-          data: cleanFormData,
-        });
-
-        response = await patchHosterProfileApi(actualProfileId, cleanFormData);
-      } else {
-        response = await postHosterProfileApi({
-          ...cleanFormData,
-          _id: userId,
-        });
+      e.preventDefault();
+      setStatusMessage("");
+  
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        console.error("Critical Error: No user ID found in cookies");
+        setStatusMessage("Authentication failed. Please log in again.");
+        setStatusType("error");
+        return;
       }
-
-      console.log("Full API Submission Response:", response);
-
-      // More flexible profile identifier extraction
-      const profileIdentifier =
-        response?.data?._id ||
-        response?.data?.seekerDetails?._id ||
-        response?.data?.userId ||
-        actualProfileId ||
-        userId;
-
-      if (profileIdentifier) {
-        setProfileId(profileIdentifier);
-        setIsEditing(true);
-        setStatusMessage("Profile saved successfully!");
-        setStatusType("success");
-        setIsEditMode(false);
-      } else {
-        throw new Error("Could not retrieve or generate profile identifier");
+  
+      try {
+        const actualProfileId =
+          typeof profileId === "object" && profileId._id
+            ? profileId._id
+            : profileId || userId;
+  
+        console.log("Actual Profile ID for Update:", actualProfileId);
+  
+        const cleanFormData = {
+          ...formData,
+          userId: userId
+        };
+  
+        delete cleanFormData._id;
+  
+        let response;
+        if (isEditing && actualProfileId) {
+          console.log("Updating profile with:", {
+            profileId: actualProfileId,
+            data: cleanFormData,
+          });
+  
+          response = await patchHosterProfileApi(actualProfileId, cleanFormData);
+        } else {
+          response = await postHosterProfileApi({
+            ...cleanFormData,
+            _id: userId,
+          });
+        }
+  
+        console.log("Full API Submission Response:", response);
+  
+        const profileIdentifier =
+          response?.data?._id ||
+          response?.data?.seekerDetails?._id ||
+          response?.data?.userId ||
+          actualProfileId ||
+          userId;
+  
+        if (profileIdentifier) {
+          setProfileId(profileIdentifier);
+          setIsEditing(true);
+          setStatusMessage("Profile saved successfully!");
+          setStatusType("success");
+          setIsEditMode(false);
+        } else {
+          throw new Error("Could not retrieve or generate profile identifier");
+        }
+      } catch (error) {
+        console.error("Comprehensive Profile Submission Error:", {
+          errorResponse: error.response?.data,
+          errorMessage: error.message,
+          errorStatus: error.response?.status,
+          fullError: error,
+        });
+  
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Failed to save profile. Please check your information.";
+  
+        setStatusMessage(errorMessage);
+        setStatusType("error");
       }
-    } catch (error) {
-      console.error("Comprehensive Profile Submission Error:", {
-        errorResponse: error.response?.data,
-        errorMessage: error.message,
-        errorStatus: error.response?.status,
-        fullError: error,
-      });
-
-      // Enhanced error message extraction
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Failed to save profile. Please check your information.";
-
-      setStatusMessage(errorMessage);
-      setStatusType("error");
-    }
-  };
+    };
 
   const handleDeleteAccount = async () => {
     const userId = Cookies.get("userId");

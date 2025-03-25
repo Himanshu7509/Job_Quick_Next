@@ -34,7 +34,6 @@ const JobCard = ({ jobs }) => {
     ? new Date(dateCreated).toLocaleDateString()
     : "Date Not Available";
 
-  // Format salary range nicely
   const formatSalary = () => {
     if (minPackage === "N/A" && maxPackage === "N/A")
       return "Salary not disclosed";
@@ -45,7 +44,7 @@ const JobCard = ({ jobs }) => {
 
   return (
     <div className="h-full p-4 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
-      {/* Header with logo and company info */}
+   
       <div className="flex items-start mb-4">
         <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
           <img
@@ -68,7 +67,7 @@ const JobCard = ({ jobs }) => {
         </div>
       </div>
 
-      {/* Job details */}
+  
       <div className="flex-grow">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-2">

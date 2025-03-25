@@ -50,7 +50,7 @@ export const JobsAPi = (filters) => {
     }
   });
   
-  // Handle category and subcategory mapping - key conversion
+
   if (filterParams.category) {
     filterParams.categories = filterParams.category;
     delete filterParams.category;

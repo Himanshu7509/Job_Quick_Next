@@ -90,8 +90,9 @@ const RecentJobs = () => {
 
       try {
         console.log("Token found. Fetching jobs from API...");
-        const response = await JobsAPi(authToken); // make sure your API call includes the token
-        console.log("API response:", response?.data);
+        const response = await JobsAPi(authToken);
+        const data = response?.data.jobs;
+        console.log("jobs response:", data);
 
         if (response?.data?.jobs?.length > 0) {
           setJobsData(response.data.jobs);
@@ -127,7 +128,7 @@ const RecentJobs = () => {
             </p>
           </div>
           <Link
-            href="/jobs"
+            href={`/jobs`}
             className="group flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200"
           >
             View all jobs
