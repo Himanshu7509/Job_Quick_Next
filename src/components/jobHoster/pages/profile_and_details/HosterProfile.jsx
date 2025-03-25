@@ -75,56 +75,92 @@ const HosterProfile = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatusMessage("");
-
-    const userId = Cookies.get("userId");
-    if (!userId) {
-      console.error("Error: userId is missing in cookies");
-      setStatusMessage("Error: User ID is missing. Please log in again.");
-      setStatusType("error");
-      return;
-    }
-
-    const updatedFormData = { ...formData };
-    if (!isEditing) updatedFormData._id = userId;
-
-    console.log("Submitting Data:", updatedFormData);
-
-    try {
-      let response;
-      if (isEditing && profileId) {
-        response = await patchHosterProfileApi(profileId, updatedFormData);
-        console.log("Profile updated successfully!");
-      } else {
-        response = await postHosterProfileApi(updatedFormData);
-        console.log("Profile created successfully!");
-
-        if (response?.data?._id) {
-          setProfileId(response.data._id);
-          setIsEditing(true);
-        } else if (response?.data?.seekerDetails?._id) {
-          setProfileId(response.data.seekerDetails._id);
-          setIsEditing(true);
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      setStatusMessage("");
+    
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        console.error("Critical Error: No user ID found in cookies");
+        setStatusMessage("Authentication failed. Please log in again.");
+        setStatusType("error");
+        return;
+      }
+    
+      try {
+        // Correctly extract profile ID
+        const actualProfileId = 
+          typeof profileId === 'object' && profileId._id 
+            ? profileId._id 
+            : (profileId || userId);
+    
+        console.log("Actual Profile ID for Update:", actualProfileId);
+    
+        const cleanFormData = {
+          ...formData,
+          userId: userId,
+          skills: formData.skills 
+            ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
+            : []
+        };
+    
+        // Remove the _id object from the data
+        delete cleanFormData._id;
+    
+        let response;
+        if (isEditing && actualProfileId) {
+          console.log('Updating profile with:', {
+            profileId: actualProfileId,
+            data: cleanFormData
+          });
+    
+          response = await patchHosterProfileApi(actualProfileId, cleanFormData);
+        } else {
+          response = await postHosterProfileApi({
+            ...cleanFormData,
+            _id: userId
+          });
         }
+    
+        console.log('Full API Submission Response:', response);
+    
+        // Flexible profile identifier extraction
+        const profileIdentifier = 
+          response?.data?._id || 
+          response?.data?.seekerDetails?._id || 
+          response?.data?.userId || 
+          actualProfileId || 
+          userId;
+    
+        if (profileIdentifier) {
+          setProfileId(profileIdentifier);
+          setIsEditing(true);
+          setStatusMessage("Profile saved successfully!");
+          setStatusType("success");
+          setIsEditMode(false);
+        } else {
+          throw new Error("Could not retrieve or generate profile identifier");
+        }
+    
+      } catch (error) {
+        console.error('Comprehensive Profile Submission Error:', {
+          errorResponse: error.response?.data,
+          errorMessage: error.message,
+          errorStatus: error.response?.status,
+          fullError: error
+        });
+    
+        // Enhanced error message extraction
+        const errorMessage = 
+          error.response?.data?.message || 
+          error.response?.data?.error || 
+          error.message || 
+          "Failed to save profile. Please check your information.";
+    
+        setStatusMessage(errorMessage);
+        setStatusType("error");
       }
-
-      if (response.status === 200 || response.status === 201) {
-        setStatusMessage(
-          isEditing
-            ? "Profile updated successfully!"
-            : "Profile created successfully!"
-        );
-        setStatusType("success");
-        setIsEditMode(false);
-      }
-    } catch (error) {
-      console.error("Server Error:", error);
-      setStatusMessage("Error saving profile. Please try again.");
-      setStatusType("error");
-    }
-  };
+    };
 
   const toggleEditMode = () => {
     if (isEditMode) {

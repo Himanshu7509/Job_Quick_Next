@@ -1,15 +1,9 @@
 "use client";
 
-import { FaBriefcase, FaUsers, FaUserCheck } from "react-icons/fa"; //Uncomment this
-
-// Import useEffect
-
+import { FaBriefcase, FaUsers, FaUserCheck } from "react-icons/fa"; 
 const Statistics = ({ stats }) => {
   console.log("Stats:", stats);
 
-  if (!stats) {
-    return <div>Loading...</div>; // Or a better loading indicator
-  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">

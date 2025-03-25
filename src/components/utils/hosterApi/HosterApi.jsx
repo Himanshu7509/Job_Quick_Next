@@ -72,3 +72,7 @@ export const appicantAPI = (applicantId) => {
 export const shortlistedApi = (applicantId, payload) => {
   return Api.patch(`/applicant/shortlisted/${applicantId}`, payload);
 };
+
+export const HosterDataTable = () => {  
+  return Api.get(`job/table/${userId}`); 
+}

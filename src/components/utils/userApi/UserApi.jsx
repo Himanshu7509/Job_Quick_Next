@@ -84,3 +84,11 @@ export const jobApplyApi = (post) => {
  export const checkApplyApi = (jobId, applicantId) => {
   return userApi.get(`applicant/check?jobId=${jobId}&applicantId=${applicantId}`)
  }
+
+ export const deleteUserApi = (seekerId) => {
+  return userApi.delete(`auth/delete/seeker/${seekerId}`)
+ }
+
+ export const showJobsApi = (userId,limit,page) => {
+  return userApi.get(`https://next-jobquick.onrender.com/api/v1/applicant/get/jobs/${userId}?limit=${limit}&page=${page}`);
+}

@@ -11,6 +11,7 @@ const PostJob = () => {
   const [categories, setCategories] = useState([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const [skillInput, setSkillInput] = useState("");
   const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ const PostJob = () => {
     skills: [],
   });
   const router = useRouter();
-  const isEditMode = true; // Always in edit mode for form input
+  const isEditMode = true;
 
   useEffect(() => {
     startTransition(() => {
@@ -76,6 +77,52 @@ const PostJob = () => {
       fetchCategories();
     });
   }, []);
+
+  // Prevent form submission on Enter key
+  const preventDefaultSubmit = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
+  // Validate form fields
+  const validateForm = () => {
+    const errors = {};
+    
+    // Step 1 Validation (Company Information)
+    if (step === 1) {
+      if (!formData.companyName) errors.companyName = "Company Name is required";
+      if (!formData.fullName) errors.fullName = "Provider Name is required";
+      if (!formData.companyEmail) errors.companyEmail = "Company Email is required";
+      if (!formData.phoneNo) errors.phoneNo = "Phone Number is required";
+      if (!formData.companyDescription) errors.companyDescription = "Company Description is required";
+    }
+
+    // Step 2 Validation (Job Details)
+    if (step === 2) {
+      if (!formData.title) errors.title = "Job Title is required";
+      if (!formData.noOfOpening) errors.noOfOpening = "Number of Openings is required";
+      if (!formData.categoryTitle) errors.categoryTitle = "Category is required";
+      if (!formData.subcategories.length) errors.subcategory = "Subcategory is required";
+      if (!formData.jobType) errors.jobType = "Job Type is required";
+      if (!formData.location) errors.location = "Location is required";
+    }
+
+    // Step 3 Validation (Requirements)
+    if (step === 3) {
+      if (!formData.minPackage) errors.minPackage = "Minimum Package is required";
+      if (!formData.maxPackage) errors.maxPackage = "Maximum Package is required";
+      if (!formData.interviewType) errors.interviewType = "Interview Type is required";
+      if (!formData.experience) errors.experience = "Experience Level is required";
+      if (!formData.workType) errors.workType = "Work Type is required";
+      if (!formData.minEducation) errors.minEducation = "Minimum Education is required";
+      if (formData.skills.length === 0) errors.skills = "At least one skill is required";
+      if (!formData.jobDescription) errors.jobDescription = "Job Description is required";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const addSkill = (skill) => {
     const trimmedSkill = skill.trim();
@@ -122,7 +169,7 @@ const PostJob = () => {
   };
 
   const handleSkillInputKeyDown = (e) => {
-    if ((e.key === " " || e.key === ",") && skillInput.trim()) {
+    if ((e.key === ",") && skillInput.trim()) {
       e.preventDefault(); // Prevent form submission
       addSkill(skillInput);
       setSkillInput(""); // Clear input after adding
@@ -136,10 +183,33 @@ const PostJob = () => {
     }));
   };
 
+  // Modified handleNext to include validation
+  const handleNext = () => {
+    if (validateForm()) {
+      setStep((prev) => prev + 1);
+      setValidationErrors({}); // Clear validation errors when moving to next step
+    }
+  };
+
+  // Modified handlePrevious to reset errors
+  const handlePrevious = () => {
+    setStep((prev) => prev - 1);
+    setValidationErrors({});
+  };
+
+  // Modified handleSubmit to include validation
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Reset previous errors
     setError(null);
+    
+    // Validate all steps
+    const isValid = validateForm();
+
+    if (!isValid) {
+      return;
+    }
 
     const authToken = Cookies.get("authToken");
 
@@ -149,9 +219,7 @@ const PostJob = () => {
     }
 
     try {
-      // Send the request using the postJob API function
       const response = await postJob(formData);
-
       console.log("Job posted successfully:", response);
       router.push("/dashboard");
     } catch (error) {
@@ -162,10 +230,7 @@ const PostJob = () => {
     }
   };
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handlePrevious = () => setStep((prev) => prev - 1);
-
-  // Reusable input field renderer
+  // Reusable input field renderer with validation
   const renderInput = (id, label, type = "text") => (
     <div>
       <label
@@ -180,12 +245,24 @@ const PostJob = () => {
         name={id}
         value={formData[id]}
         onChange={handleChange}
-        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50 transition-shadow duration-200"
+        onKeyDown={preventDefaultSubmit}
+        className={`w-full px-4 py-2 border ${
+          validationErrors[id] 
+            ? 'border-red-500 bg-red-50' 
+            : 'border-gray-200 bg-gray-50'
+        } rounded-lg focus:outline-none focus:ring-2 ${
+          validationErrors[id] 
+            ? 'focus:ring-red-500' 
+            : 'focus:ring-teal-500'
+        } transition-shadow duration-200`}
       />
+      {validationErrors[id] && (
+        <p className="mt-1 text-xs text-red-500">{validationErrors[id]}</p>
+      )}
     </div>
   );
 
-  // Reusable select field renderer
+  // Reusable select field renderer with validation
   const renderSelect = (id, label, options) => (
     <div>
       <label
@@ -199,7 +276,12 @@ const PostJob = () => {
         name={id}
         value={formData[id]}
         onChange={handleChange}
-        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+        onKeyDown={preventDefaultSubmit}
+        className={`mt-1 block w-full border ${
+          validationErrors[id] 
+            ? 'border-red-500 bg-red-50' 
+            : 'border-gray-300'
+        } rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
       >
         <option value="">Select {label}</option>
         {options.map((option) => (
@@ -208,10 +290,13 @@ const PostJob = () => {
           </option>
         ))}
       </select>
+      {validationErrors[id] && (
+        <p className="mt-1 text-xs text-red-500">{validationErrors[id]}</p>
+      )}
     </div>
   );
 
-  // Reusable textarea renderer
+  // Reusable textarea renderer with validation
   const renderTextarea = (id, label, rows = 4) => (
     <div>
       <label
@@ -225,13 +310,25 @@ const PostJob = () => {
         name={id}
         value={formData[id]}
         onChange={handleChange}
+        onKeyDown={preventDefaultSubmit}
         rows={rows}
-        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50 transition-shadow duration-200"
+        className={`w-full px-4 py-2 border ${
+          validationErrors[id] 
+            ? 'border-red-500 bg-red-50' 
+            : 'border-gray-200 bg-gray-50'
+        } rounded-lg focus:outline-none focus:ring-2 ${
+          validationErrors[id] 
+            ? 'focus:ring-red-500' 
+            : 'focus:ring-teal-500'
+        } transition-shadow duration-200`}
       ></textarea>
+      {validationErrors[id] && (
+        <p className="mt-1 text-xs text-red-500">{validationErrors[id]}</p>
+      )}
     </div>
   );
 
-  // Render skills input and display
+  // Render skills input with validation
   const renderSkillsInput = () => (
     <div>
       <label className="block text-sm font-medium text-gray-700">
@@ -244,12 +341,20 @@ const PostJob = () => {
           value={skillInput}
           onChange={handleChange}
           onKeyDown={handleSkillInputKeyDown}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+          onKeyPress={preventDefaultSubmit}
+          className={`mt-1 block w-full border ${
+            validationErrors.skills 
+              ? 'border-red-500 bg-red-50' 
+              : 'border-gray-300'
+          } rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
           placeholder="Type a skill and comma to add it"
         />
         <div className="mt-2 text-xs text-gray-500">
           Press Enter or comma (,) to add a skill
         </div>
+        {validationErrors.skills && (
+          <p className="mt-1 text-xs text-red-500">{validationErrors.skills}</p>
+        )}
       </div>
       {formData.skills.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
@@ -273,10 +378,11 @@ const PostJob = () => {
     </div>
   );
 
+  // Render Company Form (Step 1)
   const renderCompanyForm = () => (
     <>
       <div>
-        {error && <p className="mt-1 text-sm text-teal-600">{error}</p>}
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -308,6 +414,7 @@ const PostJob = () => {
     </>
   );
 
+  // Render Job Details Form (Step 2)
   const renderJobDetailsForm = () => (
     <>
       <div className="flex-1">{renderInput("title", "Job Title")}</div>
@@ -325,7 +432,12 @@ const PostJob = () => {
             name="categoryTitle"
             value={formData.categoryTitle}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+            onKeyDown={preventDefaultSubmit}
+            className={`mt-1 block w-full border ${
+              validationErrors.categoryTitle 
+                ? 'border-red-500 bg-red-50' 
+                : 'border-gray-300'
+            } rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
           >
             <option value="">Select Category</option>
             {categories.length === 0 ? (
@@ -338,6 +450,9 @@ const PostJob = () => {
               ))
             )}
           </select>
+          {validationErrors.categoryTitle && (
+            <p className="mt-1 text-xs text-red-500">{validationErrors.categoryTitle}</p>
+          )}
         </div>
 
         {formData.categoryTitle && availableSubcategories.length > 0 && (
@@ -349,7 +464,12 @@ const PostJob = () => {
               name="subcategory"
               value={formData.subcategories[0] || ""}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+              onKeyDown={preventDefaultSubmit}
+              className={`mt-1 block w-full border ${
+                validationErrors.subcategory 
+                  ? 'border-red-500 bg-red-50' 
+                  : 'border-gray-300'
+              } rounded-md shadow-sm py-2 px-3 focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
             >
               <option value="">Select Subcategory</option>
               {availableSubcategories.map((subcat, index) => (
@@ -358,6 +478,9 @@ const PostJob = () => {
                 </option>
               ))}
             </select>
+            {validationErrors.subcategory && (
+              <p className="mt-1 text-xs text-red-500">{validationErrors.subcategory}</p>
+            )}
           </div>
         )}
       </div>
@@ -387,6 +510,7 @@ const PostJob = () => {
     </>
   );
 
+  // Render Requirements Form (Step 3)
   const renderRequirementsForm = () => (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
