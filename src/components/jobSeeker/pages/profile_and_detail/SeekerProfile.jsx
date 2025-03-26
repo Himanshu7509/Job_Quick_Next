@@ -3,6 +3,18 @@
 import React, { useEffect, useState, useTransition } from "react";
 import Cookies from "js-cookie";
 import {
+  User,
+  Edit,
+  Trash2,
+  CheckCircle,
+  Calendar,
+  Phone,
+  Link,
+  MapPin,
+  Briefcase,
+  BookOpen
+} from "lucide-react";
+import {
   postProfileApi,
   patchProfileApi,
   getProfileApi,
@@ -108,36 +120,34 @@ const SeekerProfile = () => {
   }, []);
 
   const handleDeleteAccount = async () => {
-      const userId = Cookies.get("userId");
-      if (!userId) {
-        setStatusMessage("Authentication failed. Please log in again.");
-        setStatusType("error");
-        return;
-      }
-  
-      try {
-        await deleteUserApi(userId);
-  
-        // Clear all cookies
-        Cookies.remove("authToken");
-        Cookies.remove("userId");
-  
-        // Redirect to login or home page
-        router.push("/user-login");
-      } catch (error) {
-        console.error("Delete Account Error:", error);
-  
-        const errorMessage =
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          error.message ||
-          "Failed to delete account. Please try again.";
-  
-        setStatusMessage(errorMessage);
-        setStatusType("error");
-        setIsDeleteModalOpen(false);
-      }
-    };
+    const userId = Cookies.get("userId");
+    if (!userId) {
+      setStatusMessage("Authentication failed. Please log in again.");
+      setStatusType("error");
+      return;
+    }
+
+    try {
+      await deleteUserApi(userId);
+
+      Cookies.remove("authToken");
+      Cookies.remove("userId");
+
+      router.push("/user-login");
+    } catch (error) {
+      console.error("Delete Account Error:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to delete account. Please try again.";
+
+      setStatusMessage(errorMessage);
+      setStatusType("error");
+      setIsDeleteModalOpen(false);
+    }
+  };
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -365,45 +375,23 @@ const SeekerProfile = () => {
                           : "bg-indigo-50 text-teal-600 hover:bg-indigo-100"
                       }`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        {isEditMode ? (
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        ) : (
-                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        )}
-                      </svg>
+                      {isEditMode ? (
+                        <CheckCircle className="h-5 w-5" />
+                      ) : (
+                        <Edit className="h-5 w-5" />
+                      )}
                       <span>
                         {isEditMode ? "Save Profile" : "Edit Profile"}
                       </span>
                     </button>
                     
-                      <button
-                        onClick={() => setIsDeleteModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span>Delete Account</span>
-                      </button>
+                    <button
+                      onClick={() => setIsDeleteModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition duration-200"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      <span>Delete Account</span>
+                    </button>
                     
                     {isDeleteModalOpen && (
                       <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
@@ -454,22 +442,10 @@ const SeekerProfile = () => {
                       <div className="bg-white rounded-2xl p-2 md:p-6 shadow-lg border border-gray-100 transform transition-all duration-300 hover:shadow-xl">
                         <div className="flex flex-col items-center">
                           <div className="relative border-2 border-gray-200 rounded-full p-2">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-20 w-20 text-gray-400"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
+                            <User className="h-20 w-20 text-gray-400" />
                           </div>
                           <div className="text-center mt-6 space-y-2">
                             <div className="text-2xl font-bold text-gray-800">
-                              {" "}
                               {renderInput("fullName")}
                             </div>
                             <div className="text-gray-600 my-4">{email}</div>
@@ -479,7 +455,7 @@ const SeekerProfile = () => {
 
                       <div className="bg-white rounded-2xl p-2 md:p-6 shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                          <span className="w-2 h-6 bg-teal-500 rounded-full"></span>
+                          <Calendar className="w-6 h-6 text-teal-500" />
                           Personal Details
                         </h2>
                         <div className="grid grid-cols-1 gap-4">
@@ -500,7 +476,6 @@ const SeekerProfile = () => {
                           Summary
                         </h2>
                         <div className="text-gray-600 leading-relaxed">
-                          {" "}
                           {renderTextarea("summary", "Summary")}
                         </div>
                       </div>
@@ -521,7 +496,7 @@ const SeekerProfile = () => {
                     <div className="md:col-span-7 space-y-8">
                       <div className="bg-white rounded-2xl p-2 md:p-6 shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                          <span className="w-2 h-6 bg-teal-500 rounded-full"></span>
+                          <MapPin className="w-6 h-6 text-teal-500" />
                           Location
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -537,7 +512,7 @@ const SeekerProfile = () => {
 
                       <div className="bg-white rounded-2xl p-2 md:p-6 shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                          <span className="w-2 h-6 bg-teal-500 rounded-full"></span>
+                          <BookOpen className="w-6 h-6 text-teal-500" />
                           Educational Details
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -553,7 +528,7 @@ const SeekerProfile = () => {
 
                       <div className="bg-white rounded-2xl p-2 md:p-6 shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                          <span className="w-2 h-6 bg-teal-500 rounded-full"></span>
+                          <Briefcase className="w-6 h-6 text-teal-500" />
                           Experience
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

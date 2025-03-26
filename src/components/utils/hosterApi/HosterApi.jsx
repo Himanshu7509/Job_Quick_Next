@@ -80,3 +80,7 @@ export const HosterDataTable = () => {
 export const deletehosterApi = (userId) => {
   return Api.delete(`auth/delete/hoster/${userId}`)
  }
+
+ export const deletehosterjobApi = (_id) => {
+  return Api.delete(`job/delete/${_id}`)
+ }

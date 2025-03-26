@@ -108,7 +108,6 @@ const JobCard = ({ jobs }) => {
         </div>
       </div>
 
-      {/* CTA Button */}
       <div className="mt-4">
         <Link href={`/jobs/${_id}`} className="block w-full">
           <button className="w-full py-2 bg-teal-600 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-teal-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50">

@@ -45,7 +45,6 @@ const HosterProfile = () => {
         if (response && response.data && response.data._id) {
           const profileData = response.data;
 
-          // Ensure all fields have a default empty string
           setFormData({
             fullName: profileData.fullName || "",
             phoneNumber: profileData.phoneNumber || "",

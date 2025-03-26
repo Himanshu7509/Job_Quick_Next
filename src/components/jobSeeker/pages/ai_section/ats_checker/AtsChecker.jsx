@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import Header from "@/components/jobSeeker/common/header/Header";
@@ -16,13 +16,12 @@ import {
   Award,
 } from "lucide-react";
 import Cookies from 'js-cookie'; 
-import Loader from "@/components/Loader";
+//  const response =await AtsCheckerApi(formData);
 
-const AtsChecker = () => {
+const ATS_Score = () => {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
- const [isPending, startTransition] = useTransition();
- 
+  const [loading, setLoading] = useState(false);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { 'application/pdf': ['.pdf'] },
@@ -31,26 +30,21 @@ const AtsChecker = () => {
     },
   });
 
-  useEffect(() => {
-      startTransition(() => {
-        handleUpload();
-      });
-    }, []);
-
   const handleUpload = async () => {
     if (!file) return alert("Please upload a resume!");
   
+    setLoading(true);
     const formData = new FormData();
     formData.append("resume", file);
   
     try {
-      // Get the token from cookies instead of localStorage
+      
       const authToken = Cookies.get("authToken");
       console.log("Token found:", authToken);
   
       if (!authToken) {
         alert("You are not logged in. Please login first.");
-        
+        setLoading(false);
         return;
       }
   
@@ -84,6 +78,7 @@ const AtsChecker = () => {
       console.error(error?.response?.data || error.message);
     }
   
+    setLoading(false);
   };
 
   return (
@@ -189,9 +184,33 @@ const AtsChecker = () => {
               <button
                 onClick={handleUpload}
                 className="mt-6 w-full px-6 py-4 bg-teal-600 text-white rounded-xl shadow-lg hover:bg-teal-700 transition-all duration-300 font-medium flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-               
+                disabled={loading}
               >
-                { (
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>Analyzing Resume...</span>
+                  </>
+                ) : (
                   <span className="flex items-center">
                     <Target className="w-5 h-5 mr-2" />
                     Start Analysis
@@ -268,4 +287,4 @@ const AtsChecker = () => {
   );
 };
 
-export default AtsChecker;
+export default ATS_Score;
