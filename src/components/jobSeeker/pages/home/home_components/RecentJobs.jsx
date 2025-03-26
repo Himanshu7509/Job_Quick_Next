@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie"; // npm install js-cookie
+import Cookies from "js-cookie";
 import { UserCheck, Clock, MapPin, Laptop } from "lucide-react";
 import { GiWallet } from "react-icons/gi";
 import { TbCategory } from "react-icons/tb";
@@ -80,28 +80,22 @@ const RecentJobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       const authToken = Cookies.get("authToken");
-      console.log("Auth Token from Cookie:", authToken);
 
       if (!authToken) {
-        console.log("No token found. Showing static jobs.");
         setJobsData(staticJobs);
         return;
       }
 
       try {
-        console.log("Token found. Fetching jobs from API...");
         const response = await JobsAPi(authToken);
         const data = response?.data.jobs;
-        console.log("jobs response:", data);
 
         if (response?.data?.jobs?.length > 0) {
           setJobsData(response.data.jobs);
         } else {
-          console.log("No jobs from API, falling back to static.");
           setJobsData(staticJobs);
         }
       } catch (err) {
-        console.error("API call failed. Falling back to static jobs.", err);
         setJobsData(staticJobs);
       }
     };
@@ -165,7 +159,7 @@ const RecentJobs = () => {
                   <div className="relative">
                     <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
                       <img
-                        src={job.logo || "https://www.pngkey.com/png/full/191-1911374_company-building-png-office-building-png.png"} // fallback if missing
+                        src={job.logo || "https://www.pngkey.com/png/full/191-1911374_company-building-png-office-building-png.png"}
                         alt={job.companyName || "Company Logo"}
                         className="w-16 h-16 object-cover"
                       />
@@ -184,22 +178,22 @@ const RecentJobs = () => {
                   <div className="flex items-center gap-3">
                     <TbCategory className="w-5 h-5 text-teal-600" />
                     <span className="truncate">
-                      {job.category?.title || "N/A"}
+                      {job.category?.title || job.category || "N/A"}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <GiWallet className="w-5 h-5 text-teal-600" />
                     <span className="truncate">
-                      {job.minPackage} - {job.maxPackage}
+                      {job.minPackage ? `${job.minPackage} - ${job.maxPackage}` : job.salary}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.jobType}</span>
+                    <span className="truncate">{job.jobType || job.type}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Laptop className="w-5 h-5 text-teal-600" />
-                    <span className="truncate">{job.workType}</span>
+                    <span className="truncate">{job.workType || job.worktype}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <UserCheck className="w-5 h-5 text-teal-600" />
